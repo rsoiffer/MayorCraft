@@ -8,5 +8,6 @@ public class Mayor extends AbstractEntity {
         //Components
         PositionComponent pc = add(new PositionComponent());
         //Systems
+        add(new RenderSystem(pc, sc));
     }
 }
