@@ -24,8 +24,7 @@ public class RenderManagerSystem extends AbstractSystem {
             Display.create();
             //OpenGL Init
             glEnable(GL_BLEND);
-            //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glDisable(GL_DEPTH_TEST);
             glDisable(GL_LIGHTING);
         } catch (LWJGLException ex) {
@@ -109,7 +108,7 @@ public class RenderManagerSystem extends AbstractSystem {
         glMatrixMode(GL_MODELVIEW);
 
         glClear(GL_COLOR_BUFFER_BIT);
-        glClearColor(0, 0, 0, 1);
+        glClearColor(1, 1, 1, 1);
     }
 
 }

@@ -16,8 +16,8 @@ public class RenderManagerComponent extends AbstractComponent {
         displayWidth = 1920;
         displayHeight = 1080;
         startFullscreen = true;
-        viewX = 0;
-        viewY = 0;
+        viewX = -500;
+        viewY = -500;
         viewWidth = 1920;
         viewHeight = 1080;
     }

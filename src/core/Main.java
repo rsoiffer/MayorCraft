@@ -5,6 +5,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import worldgen.World;
 
 public abstract class Main {
 
@@ -40,6 +41,7 @@ public abstract class Main {
         Mouse.create();
 
         //Create entities
+        new World();
     }
 
     public static void run() {
