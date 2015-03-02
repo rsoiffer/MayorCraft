@@ -2,6 +2,7 @@ package worldgen;
 
 import core.AbstractSystem;
 import core.Color4d;
+import graphics.Graphics;
 import static org.lwjgl.opengl.GL11.*;
 
 public class WorldSystem extends AbstractSystem {
@@ -16,6 +17,7 @@ public class WorldSystem extends AbstractSystem {
         if (c.elevation > 10) {
             return Color4d.RED;
         } else if (!c.isLand) {
+            if (c.isOnOcean) return new Color4d(0,0,.7,1);
             return Color4d.BLUE;
         } else if (c.isOnOcean) {
             return new Color4d(.8,.8,.5,1);
@@ -43,7 +45,7 @@ public class WorldSystem extends AbstractSystem {
         }
 
         for (Edge e : world.edges) {
-            //Graphics.drawLine(e.v0.pos, e.v1.pos, Color4d.BLACK, 1);
+            Graphics.drawLine(e.v0.pos, e.v1.pos, Color4d.BLACK, 1);
         }
 
         for (Corner c : world.corners) {
