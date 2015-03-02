@@ -44,13 +44,13 @@ public abstract class Graphics {
     }
 
     public static void drawLine(Vec2 start, Vec2 end) {
-        drawLine(start, end, Color4d.BLACK);
+        drawLine(start, end, Color4d.BLACK, 2);
     }
 
-    public static void drawLine(Vec2 start, Vec2 end, Color4d color) {
+    public static void drawLine(Vec2 start, Vec2 end, Color4d color, int width) {
         glPushMatrix();
         glDisable(GL_TEXTURE_2D);
-        glLineWidth(2);
+        glLineWidth(width);
         color.glColor();
         glBegin(GL_LINES);
         {

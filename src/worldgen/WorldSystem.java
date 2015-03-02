@@ -31,36 +31,18 @@ public class WorldSystem extends AbstractSystem {
                 }
             }
             glEnd();
-//            glColor4d(0, 0, 0, 1);
-//            glBegin(GL_LINE_LOOP);
-//            {
-//                for (Corner co : c.corners) {
-//                    glVertex2d(co.pos.x, co.pos.y);
-//                }
-//            }
-//            glEnd();
             glPopMatrix();
 
         }
 
         for (Edge e : world.edges) {
-            glPushMatrix();
-            glDisable(GL_TEXTURE_2D);
-            glColor4d(0, 0, 0, 1);
-            glBegin(GL_LINES);
-            {
-                glVertex2d(e.v0.pos.x, e.v0.pos.y);
-                glVertex2d(e.v1.pos.x, e.v1.pos.y);
+            //Graphics.drawLine(e.v0.pos, e.v1.pos, Color4d.BLACK, 1);
+        }
+
+        for (Corner c : world.corners) {
+            if (c.isLand && !c.isCoast) {
+                //Graphics.drawLine(c.pos, c.downslope.pos, Color4d.BLUE, 2);
             }
-            glEnd();
-            glColor4d(1, 0, 1, 1);
-            glBegin(GL_LINES);
-            {
-                glVertex2d(e.p0.pos.x, e.p0.pos.y);
-                glVertex2d(e.p1.pos.x, e.p1.pos.y);
-            }
-            glEnd();
-            glPopMatrix();
         }
     }
 

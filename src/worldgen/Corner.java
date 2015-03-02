@@ -1,7 +1,7 @@
 package worldgen;
 
 import core.Vec2;
-import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Corner implements Comparable {
 
@@ -10,18 +10,19 @@ public class Corner implements Comparable {
     public boolean isLand;
     public boolean isCoast;
     public double elevation;
-    public ArrayList<Center> touches;
-    public ArrayList<Edge> protrudes;
-    public ArrayList<Corner> adjacent;
+    public HashSet<Center> touches;
+    public HashSet<Edge> protrudes;
+    public HashSet<Corner> adjacent;
     public double water;
     public Corner downslope;
+    public Corner watershed;
 
     Corner(double x, double y) {
         pos = new Vec2(x, y);
         isBorder = Math.abs(x) == World.SIZE || Math.abs(y) == World.SIZE;
-        touches = new ArrayList();
-        protrudes = new ArrayList();
-        adjacent = new ArrayList();
+        touches = new HashSet();
+        protrudes = new HashSet();
+        adjacent = new HashSet();
     }
 
     @Override

@@ -9,32 +9,15 @@ public class Center {
     public boolean isLand;
     public boolean isBorder;
     public double elevation;
-    public ArrayList<Center> neighbors;
-    public ArrayList<Edge> borders;
-    public ArrayList<Corner> corners;
+    public HashSet<Center> neighbors;
+    public HashSet<Edge> borders;
+    public TreeSet<Corner> corners;
 
     Center(double x, double y) {
         pos = new Vec2(x, y);
-        neighbors = new ArrayList();
-        borders = new ArrayList();
-        corners = new ArrayList();
-    }
-
-    Vec2 average() {
-        Vec2 r = new Vec2();
-        for (Corner c : corners) {
-            r = r.add(c.pos);
-        }
-        return r.multiply(1 / corners.size());
-    }
-
-    void fix() {
-        elevation = 0;
-        for (Corner c : corners) {
-            elevation += c.elevation;
-        }
-        elevation /= corners.size();
-        Collections.sort(corners, new Comparator() {
+        neighbors = new HashSet();
+        borders = new HashSet();
+        corners = new TreeSet(new Comparator() {
 
             @Override
             public int compare(Object t, Object t1) {
@@ -44,15 +27,21 @@ public class Center {
             }
 
         });
-        int landCount = 0;
+    }
+
+    Vec2 average() {
+        Vec2 r = new Vec2();
         for (Corner c : corners) {
-            if (c.isBorder) {
-                isBorder = true;
-            }
-            if (c.isLand) {
-                landCount++;
-            }
+            r = r.add(c.pos);
         }
-        isLand = landCount > corners.size() * .7;
+        return r.multiply(1. / corners.size());
+    }
+
+    void fix() {
+        elevation = 0;
+        for (Corner c : corners) {
+            elevation += c.elevation;
+        }
+        elevation /= corners.size();
     }
 }
