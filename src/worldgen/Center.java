@@ -7,6 +7,7 @@ public class Center {
 
     public Vec2 pos;
     public boolean isLand;
+    public boolean isOnOcean;
     public boolean isBorder;
     public double elevation;
     public HashSet<Center> neighbors;

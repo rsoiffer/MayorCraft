@@ -1,6 +1,7 @@
 package worldgen;
 
 import core.AbstractSystem;
+import core.Color4d;
 import static org.lwjgl.opengl.GL11.*;
 
 public class WorldSystem extends AbstractSystem {
@@ -9,6 +10,18 @@ public class WorldSystem extends AbstractSystem {
 
     public WorldSystem(World world) {
         this.world = world;
+    }
+
+    public Color4d getColor(Center c, Corner co) {
+        if (c.elevation > 10) {
+            return Color4d.RED;
+        } else if (!c.isLand) {
+            return Color4d.BLUE;
+        } else if (c.isOnOcean) {
+            return new Color4d(.8,.8,.5,1);
+        }else {
+            return new Color4d(c.elevation, 1, c.elevation, 1);
+        }
     }
 
     @Override
@@ -20,13 +33,7 @@ public class WorldSystem extends AbstractSystem {
             glBegin(GL_POLYGON);
             {
                 for (Corner co : c.corners) {
-                    if (c.elevation > 10) {
-                        glColor4d(1, 0, 0, 1);
-                    } else if (!c.isLand) {
-                        glColor4d(0, 0, 1, 1);
-                    } else {
-                        glColor4d(co.elevation, 1, co.elevation, 1);
-                    }
+                    getColor(c, co).glColor();
                     glVertex2d(co.pos.x, co.pos.y);
                 }
             }

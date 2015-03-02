@@ -45,6 +45,7 @@ public class World extends AbstractEntity {
             }
             c.isLand = landCount > c.corners.size() * .7 && !c.isBorder;
         }
+        //Flood fill to find lakes
         //Set the edges based on their polygons
         for (Edge e : edges) {
             e.isLand = e.p0.isLand && e.p1.isLand;
@@ -58,7 +59,13 @@ public class World extends AbstractEntity {
                 }
             }
             c.isLand = landCount > 0;
-            c.isCoast = c.isLand && landCount < c.touches.size();
+            if (c.isLand && landCount < c.touches.size()) {
+            c.isCoast = true;
+            for (Center ce : c.touches) {
+                ce.isOnOcean = true;
+            }
+            }
+            
         }
     }
 
