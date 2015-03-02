@@ -8,7 +8,7 @@ import movement.*;
 public class Unit extends AbstractEntity {
 	public Unit(){
 		PositionComponent pc = add(new PositionComponent());
-		RotationComponent rc = add(new VelocityComponent());
+		RotationComponent rc = add(new RotationComponent());
 		
 	}
 	public void followOrders(){

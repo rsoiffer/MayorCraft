@@ -12,4 +12,7 @@ public DestinationSystem(PositionComponent position, VelocityComponent velocity,
 
 
 }
+public void update(){
+
+}
 }
