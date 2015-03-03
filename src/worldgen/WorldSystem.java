@@ -18,7 +18,7 @@ public class WorldSystem extends AbstractSystem {
             return Color4d.RED;
         } else if (!c.isLand) {
             if (c.isOnOcean) return new Color4d(0,0,.7,1);
-            return Color4d.BLUE;
+            return new Color4d(.2,.6,1,1);
         } else if (c.isOnOcean) {
             return new Color4d(.8,.8,.5,1);
         }else {

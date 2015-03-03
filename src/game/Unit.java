@@ -1,8 +1,6 @@
 package game; 
 
-import core.AbstarctEntity; 
-import core.Keys;
-import core.MouseInput;
+import core.AbstractEntity;
 import movement.*;
 
 public class Unit extends AbstractEntity {
