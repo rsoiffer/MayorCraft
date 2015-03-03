@@ -23,7 +23,7 @@ public abstract class MouseInput {
         return released.contains(button);
     }
 
-    public Vec2 mouse() {
+    public static Vec2 mouse() {
         RenderManagerComponent rmc = Main.gameManager.rmc;
         int w = Display.getWidth();
         int h = Display.getHeight();
