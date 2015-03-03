@@ -39,10 +39,6 @@ public class Center {
     }
 
     void fix() {
-        elevation = 0;
-        for (Corner c : corners) {
-            elevation += c.elevation;
-        }
-        elevation /= corners.size();
+
     }
 }

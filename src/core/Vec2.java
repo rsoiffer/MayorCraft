@@ -40,6 +40,10 @@ public class Vec2 {
         return false;
     }
 
+    public Vec2 interpolate(Vec2 other, double amt) {
+        return multiply(amt).add(other.multiply(1 - amt));
+    }
+
     public double length() {
         return Math.sqrt(lengthSquared());
     }

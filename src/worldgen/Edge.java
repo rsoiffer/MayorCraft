@@ -1,6 +1,7 @@
 package worldgen;
 
 import core.Vec2;
+import java.util.ArrayList;
 
 public class Edge {
 
@@ -9,4 +10,5 @@ public class Edge {
     public Vec2 mid;
     public double water;
     public boolean isLand;
+    public ArrayList<Vec2> noisePath = new ArrayList();
 }

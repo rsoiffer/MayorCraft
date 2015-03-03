@@ -38,4 +38,13 @@ public class Corner implements Comparable {
         }
         return 0;
     }
+
+    public Edge edgeTo(Corner c) {
+        for (Edge e : protrudes) {
+            if (e.v0 == c || e.v1 == c) {
+                return e;
+            }
+        }
+        return null;
+    }
 }
