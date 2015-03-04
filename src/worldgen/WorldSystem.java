@@ -63,7 +63,7 @@ public class WorldSystem extends AbstractSystem {
         }
         
         glPushMatrix();
-        glScaled(zoom, .5*zoom, 1);
+        glScaled(zoom, .75*zoom, 1);
         glTranslated(pos.x, pos.y, 0);
         glRotated(rot * 180 / Math.PI, 0, 0, 1);
         //glScaled(1,.5,1);
