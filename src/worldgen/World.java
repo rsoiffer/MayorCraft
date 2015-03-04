@@ -9,13 +9,13 @@ import voronoi.Voronoi;
 
 public class World extends AbstractEntity {
 
-    private static final int BUCKETS = 100;
-    public static final int POINTS = 2000;
+    public static final int POINTS = 10000;
+    private static final int BUCKETS = POINTS / 10;
     public static final int SIZE = 500;
     List<Center> centers = new ArrayList();
     List<Edge> edges = new ArrayList();
     List<Corner> corners = new ArrayList();
-    ArrayList<HashSet<Corner>> buckets = new ArrayList();
+    ArrayList<ArrayList<Corner>> buckets = new ArrayList();
 
     public World() {
         init();
@@ -47,7 +47,7 @@ public class World extends AbstractEntity {
 //                }
                 double newElevation = c.elevation + .001;
                 if (e.isLand) {
-                    newElevation += 1 + c.pos.subtract(n.pos).length();
+                    newElevation += 10000 * Math.random() + c.pos.subtract(n.pos).length();
                 }
                 if (n.elevation > newElevation) {
                     n.elevation = newElevation;
@@ -67,6 +67,7 @@ public class World extends AbstractEntity {
         for (int i = 0; i < important.size(); i++) {
             important.get(i).elevation = 1.1 * (1 - Math.sqrt(1 - (double) i / important.size()));
         }
+        Collections.sort(corners);
         //Set center elevations
         for (Center c : centers) {
             c.elevation = 0;
@@ -142,7 +143,9 @@ public class World extends AbstractEntity {
     private void createNoisyLines() {
         for (Edge e : edges) {
             e.noisePath.add(e.v0.pos);
-            if (e.p0.isLand != e.p1.isLand || e.water > 0) {
+            if (e.water > 0) {
+                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 4 * Math.sqrt(e.water), e.noisePath);
+            } else if (e.p0.isLand != e.p1.isLand) {
                 subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 2, e.noisePath);
             } else {
                 subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 8, e.noisePath);
@@ -208,7 +211,7 @@ public class World extends AbstractEntity {
 
     private void init() {
         for (int i = 0; i <= BUCKETS; i++) {
-            buckets.add(new HashSet());
+            buckets.add(new ArrayList());
         }
 
         //Polygons
