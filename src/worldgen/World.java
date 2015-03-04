@@ -148,7 +148,7 @@ public class World extends AbstractEntity {
             } else if (e.p0.isLand != e.p1.isLand) {
                 subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 2, e.noisePath);
             } else {
-                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 8, e.noisePath);
+                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 4, e.noisePath);
             }
             e.noisePath.add(e.v1.pos);
         }

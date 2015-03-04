@@ -61,10 +61,12 @@ public class WorldSystem extends AbstractSystem {
         if (zoom < 1) {
             zoom = 1;
         }
-
-        glScaled(zoom, zoom, 1);
+        
+        glPushMatrix();
+        glScaled(zoom, .5*zoom, 1);
         glTranslated(pos.x, pos.y, 0);
         glRotated(rot * 180 / Math.PI, 0, 0, 1);
+        //glScaled(1,.5,1);
 
         glEnable(GL_LINE_SMOOTH);
         glDisable(GL_TEXTURE_2D);
@@ -73,27 +75,27 @@ public class WorldSystem extends AbstractSystem {
 
         for (Center c : world.centers) {
             //Straight edges
-//            glBegin(GL_POLYGON);
-//            {
-//                for (Corner co : c.corners) {
-//                    getColor(c, co).glColor();
-//                    glVertex2d(co.pos.x, co.pos.y);
-//                }
-//            }
-//            glEnd();
-            //Noisy edges
-            getColor(c, null).glColor();
-            for (Edge e : c.borders) {
-                glBegin(GL_TRIANGLE_FAN);
-                {
-                    glVertex2d(c.pos.x, c.pos.y);
-                    for (int i = 0; i < e.noisePath.size(); i++) {
-                        glVertex2d(e.noisePath.get(i).x, e.noisePath.get(i).y);
-
-                    }
+            glBegin(GL_POLYGON);
+            {
+                for (Corner co : c.corners) {
+                    getColor(c, co).glColor();
+                    glVertex2d(co.pos.x+ co.elevation*100*Math.sin(rot), co.pos.y + co.elevation*100*Math.cos(rot));
                 }
-                glEnd();
             }
+            glEnd();
+            //Noisy edges
+//            getColor(c, null).glColor();
+//            for (Edge e : c.borders) {
+//                glBegin(GL_TRIANGLE_FAN);
+//                {
+//                    glVertex2d(c.pos.x, c.pos.y);
+//                    for (int i = 0; i < e.noisePath.size(); i++) {
+//                        glVertex2d(e.noisePath.get(i).x, e.noisePath.get(i).y);
+//
+//                    }
+//                }
+//                glEnd();
+//            }
         }
 
 //        Color4d.BLACK.glColor();
@@ -122,7 +124,8 @@ public class WorldSystem extends AbstractSystem {
                 glBegin(GL_LINE_STRIP);
                 {
                     for (Vec2 v : e.noisePath) {
-                        glVertex2d(v.x, v.y);
+                        //glVertex2d(v.x, v.y);
+                        glVertex2d(v.x+ e.v0.elevation*100*Math.sin(rot), v.y + e.v0.elevation*100*Math.cos(rot));
                     }
                 }
                 glEnd();
@@ -134,9 +137,7 @@ public class WorldSystem extends AbstractSystem {
                 //Graphics.drawLine(c.pos, c.downslope.pos, Color4d.BLUE, 2);
             }
         }
-        glRotated(-rot * 180 / Math.PI, 0, 0, 1);
-        glTranslated(-pos.x, -pos.y, 0);
-        glScaled(1. / zoom, 1. / zoom, 1);
+        glPopMatrix();
     }
 
 }
