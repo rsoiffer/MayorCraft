@@ -11,11 +11,13 @@ private PositionComponent position;
 private VelocityComponent velocity;
 private DestinationComponent destination;
 
-public DestinationSystem(PositionComponent position, VelocityComponent velocity, DestinationComponent destination){
+public DestinationSystem(PositionComponent position, DestinationComponent destination){
 
 
 }
 public void update(){
-velocity.vel=new Vec2(0,0);//Code to move to location of destination that I don't feel like writing yet
+   destination.des=MouseInput.mouse();
+    
+   
 }
 }
