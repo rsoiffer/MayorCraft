@@ -1,11 +1,10 @@
-package game;
+package units;
 
 import core.AbstractEntity;
-import movement.*;
- 
-
 import graphics.RenderSystem;
 import graphics.SpriteComponent;
+import movement.*;
+
 public class Unit extends AbstractEntity {
 
     public Unit() {
@@ -13,12 +12,12 @@ public class Unit extends AbstractEntity {
         PositionComponent pc = add(new PositionComponent());
         //RotationComponent rc = add(new RotationComponent());
         DestinationComponent dc = add(new DestinationComponent());
-        SpriteComponent sc= new SpriteComponent();
-      
+        SpriteComponent sc = new SpriteComponent();
+
         //Systems
         add(new DestinationSystem(pc, dc));
-        add(new RenderSystem(pc,sc));
-        
+        add(new RenderSystem(pc, sc));
+
     }
 
 }

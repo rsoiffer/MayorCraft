@@ -3,17 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package units;
 
-package core;
+import core.AbstractSystem;
 
 /**
  *
  * @author CGoodman16
  */
-public class SelectionSystem extends AbstractSystem{
- 
-    
-    public void update(){
-        
+public class SelectionSystem extends AbstractSystem {
+
+    @Override
+    public void update() {
+
     }
 }

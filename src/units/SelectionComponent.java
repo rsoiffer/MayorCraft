@@ -3,16 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package units;
 
-package core;
-
-import game.Unit;
-import java.util.ArrayList;
+import core.AbstractComponent;
 
 /**
  *
  * @author CGoodman16
  */
-public class SelectionComponent extends AbstractComponent{
-   
+public class SelectionComponent extends AbstractComponent {
+
 }
