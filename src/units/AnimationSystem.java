@@ -3,12 +3,22 @@ package units;
 import core.AbstractSystem;
 import core.Vec2;
 import movement.PositionComponent;
+import movement.RotationComponent;
+import movement.VelocityComponent;
 
 public class AnimationSystem extends AbstractSystem {
 
     private AnimationComponent ac;
-    private DestinationComponent dc;
     private PositionComponent pc;
+    private VelocityComponent vc;
+    private RotationComponent dc;
+
+    public AnimationSystem(AnimationComponent ac, PositionComponent pc, VelocityComponent vc, RotationComponent dc) {
+        this.ac = ac;
+        this.pc = pc;
+        this.vc = vc;
+        this.dc = dc;
+    }
 
     @Override
     public void update() {

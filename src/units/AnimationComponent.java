@@ -7,7 +7,6 @@ public class AnimationComponent extends AbstractComponent {
 
     public boolean footDown;
     public int armPose;
-    public double direction;
     public double d = 36;
 
     public Limb legL, legR, armL, armR;
