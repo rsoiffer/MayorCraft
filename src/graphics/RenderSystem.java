@@ -19,6 +19,11 @@ public class RenderSystem extends AbstractSystem {
     public RenderSystem(PositionComponent position, SpriteComponent sprite) {
         this(position, new RotationComponent(), sprite);
     }
+    
+    @Override
+    protected int getLayer() {
+        return 1;
+    }
 
     @Override
     public void update() {

@@ -14,16 +14,20 @@ public class DestinationSystem extends AbstractSystem {
     public DestinationSystem(PositionComponent position, VelocityComponent velocity, DestinationComponent destination) {
         this.pc = position;
         this.vc = velocity;
-        this.dc=destination;
-        
+        this.dc = destination;
+
     }
 
     @Override
     public void update() {
         if (MouseInput.isDown(0)) {
-            dc.des= MouseInput.mouse();
+            dc.des = MouseInput.mouse();
         }
-        vc.vel = dc.des.subtract(pc.pos).setLength(2);
+        if (dc.des.subtract(pc.pos).lengthSquared() > 4) {
+            vc.vel = dc.des.subtract(pc.pos).setLength(2);
+        } else {
+            vc.vel = dc.des.subtract(pc.pos);
+        }
     }
     /*Calcualtes the distance, and makes speed movements in the x+y direction
      

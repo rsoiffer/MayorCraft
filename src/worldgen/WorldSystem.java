@@ -63,7 +63,7 @@ public class WorldSystem extends AbstractSystem {
         }
         
         glPushMatrix();
-        glScaled(zoom, .75*zoom, 1);
+        glScaled(zoom, zoom, 1);
         glTranslated(pos.x, pos.y, 0);
         glRotated(rot * 180 / Math.PI, 0, 0, 1);
         //glScaled(1,.5,1);
@@ -75,47 +75,47 @@ public class WorldSystem extends AbstractSystem {
 
         for (Center c : world.centers) {
             //Straight edges
-            glBegin(GL_POLYGON);
-            {
-                for (Corner co : c.corners) {
-                    getColor(c, co).glColor();
-                    glVertex2d(co.pos.x+ co.elevation*100*Math.sin(rot), co.pos.y + co.elevation*100*Math.cos(rot));
-                }
-            }
-            glEnd();
-            //Noisy edges
-//            getColor(c, null).glColor();
-//            for (Edge e : c.borders) {
-//                glBegin(GL_TRIANGLE_FAN);
-//                {
-//                    glVertex2d(c.pos.x, c.pos.y);
-//                    for (int i = 0; i < e.noisePath.size(); i++) {
-//                        glVertex2d(e.noisePath.get(i).x, e.noisePath.get(i).y);
-//
-//                    }
+//            glBegin(GL_POLYGON);
+//            {
+//                for (Corner co : c.corners) {
+//                    getColor(c, co).glColor();
+//                    glVertex2d(co.pos.x+ co.elevation*100*Math.sin(rot), co.pos.y + co.elevation*100*Math.cos(rot));
 //                }
-//                glEnd();
 //            }
+//            glEnd();
+            //Noisy edges
+            getColor(c, null).glColor();
+            for (Edge e : c.borders) {
+                glBegin(GL_TRIANGLE_FAN);
+                {
+                    glVertex2d(c.pos.x, c.pos.y);
+                    for (int i = 0; i < e.noisePath.size(); i++) {
+                        glVertex2d(e.noisePath.get(i).x, e.noisePath.get(i).y);
+
+                    }
+                }
+                glEnd();
+            }
         }
 
-//        Color4d.BLACK.glColor();
-//        glLineWidth(1);
-//        for (Edge e : world.edges) {
-//            //Straight edges
-////            Graphics.drawLine(e.v0.pos, e.v1.pos, Color4d.BLACK, 1);
-//            //Noisy edges
-//            if (e.water == 0 || !e.isLand) {
-//                {
-//                    glBegin(GL_LINE_STRIP);
-//                    {
-//                        for (Vec2 v : e.noisePath) {
-//                            glVertex2d(v.x, v.y);
-//                        }
-//                    }
-//                    glEnd();
-//                }
-//            }
-//        }
+        Color4d.BLACK.glColor();
+        glLineWidth(1);
+        for (Edge e : world.edges) {
+            //Straight edges
+//            Graphics.drawLine(e.v0.pos, e.v1.pos, Color4d.BLACK, 1);
+            //Noisy edges
+            if (e.water == 0 || !e.isLand) {
+                {
+                    glBegin(GL_LINE_STRIP);
+                    {
+                        for (Vec2 v : e.noisePath) {
+                            glVertex2d(v.x, v.y);
+                        }
+                    }
+                    glEnd();
+                }
+            }
+        }
         //Rivers
         new Color4d(.1, .2, 1, 1).glColor();
         for (Edge e : world.edges) {
@@ -124,8 +124,8 @@ public class WorldSystem extends AbstractSystem {
                 glBegin(GL_LINE_STRIP);
                 {
                     for (Vec2 v : e.noisePath) {
-                        //glVertex2d(v.x, v.y);
-                        glVertex2d(v.x+ e.v0.elevation*100*Math.sin(rot), v.y + e.v0.elevation*100*Math.cos(rot));
+                        glVertex2d(v.x, v.y);
+                        //glVertex2d(v.x+ e.v0.elevation*100*Math.sin(rot), v.y + e.v0.elevation*100*Math.cos(rot));
                     }
                 }
                 glEnd();

@@ -5,6 +5,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import units.Unit;
 import worldgen.World;
 
 public abstract class Main {
@@ -42,6 +43,7 @@ public abstract class Main {
 
         //Create entities
         new World();
+        new Unit(new Vec2());
     }
 
     public static void run() {

@@ -11,20 +11,21 @@ public class AnimationSystem extends AbstractSystem {
     private AnimationComponent ac;
     private PositionComponent pc;
     private VelocityComponent vc;
-    private RotationComponent dc;
+    private RotationComponent rc;
 
-    public AnimationSystem(AnimationComponent ac, PositionComponent pc, VelocityComponent vc, RotationComponent dc) {
+    public AnimationSystem(AnimationComponent ac, PositionComponent pc, VelocityComponent vc, RotationComponent rc) {
         this.ac = ac;
         this.pc = pc;
         this.vc = vc;
-        this.dc = dc;
+        this.rc = rc;
     }
 
     @Override
     public void update() {
-        double speed = 4;
-        Vec2 direction = dc.path.get(0).subtract(pc.pos).normalize();
-        Vec2 vel = direction.multiply(speed);
+        System.out.println(pc.pos);
+        System.out.println(vc.vel);
+        double speed = vc.vel.length();
+        Vec2 direction = vc.vel.multiply(1 / speed);
 //        ac.legL.target = pc.pos.add(direction.multiply(30)).add(direction.normal().multiply(8));
 //        ac.legR.target = pc.pos.add(direction.multiply(30)).add(direction.normal().multiply(-8));
 //        double distL2 = ac.legL.target.subtract(ac.legL.pos).lengthSquared();
@@ -39,16 +40,16 @@ public class AnimationSystem extends AbstractSystem {
         double r = Math.max(1, speed * 2.3);
 
         double target_direction = direction.direction();
-        double diff_direction = Math.abs(target_direction - ac.direction + 4 * Math.PI) % 2 * Math.PI;
+        double diff_direction = Math.abs(target_direction - rc.rot + 4 * Math.PI) % 2 * Math.PI;
         if (diff_direction < rotation_speed) {
-            ac.direction = target_direction;
+            rc.rot = target_direction;
         } else if (diff_direction < 180) {
-            ac.direction += rotation_speed;
+            rc.rot += rotation_speed;
         } else {
-            ac.direction -= rotation_speed;
+            rc.rot -= rotation_speed;
         }
 
-        //arm_direction = ac.direction;
+        //arm_direction = rc.rot;
         ac.legL.target = ac.legL.target.setX(pc.pos.x - 8 * s_d + c_d * speed * 30 / r);
         ac.legL.target = ac.legL.target.setY(pc.pos.y - 8 * c_d + s_d * speed * 30 / r);
         ac.legR.target = ac.legR.target.setX(pc.pos.x + 8 * s_d + c_d * speed * 30 / r);
@@ -78,8 +79,8 @@ public class AnimationSystem extends AbstractSystem {
         }
         //makes the character look like it's running if it's going fast enough
         if (speed > 2) {
-            ac.legL.pos = ac.legL.pos.add(vel.multiply(.5));
-            ac.legR.pos = ac.legR.pos.add(vel.multiply(.5));
+            ac.legL.pos = ac.legL.pos.add(vc.vel.multiply(.5));
+            ac.legR.pos = ac.legR.pos.add(vc.vel.multiply(.5));
         }
 
         if (ldist > ac.d && rdist > ac.d) {

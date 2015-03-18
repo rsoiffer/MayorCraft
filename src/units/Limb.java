@@ -15,6 +15,8 @@ public class Limb {
     public Texture sprite;
     
     public Limb(String sprite) {
+        pos = new Vec2();
+        target = new Vec2();
         color1 = Color4d.RED;
         color2 = Color4d.BLUE;
         try {

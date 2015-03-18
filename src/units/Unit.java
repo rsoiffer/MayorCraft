@@ -21,7 +21,7 @@ public class Unit extends AbstractEntity {
         add(new VelocitySystem(pc, vc));
         add(new DestinationSystem(pc, vc, dc));
         add(new RenderSystem(pc, rc, sc));
-        add(new AnimationSystem(ac,pc,vc,rc));
+        add(new AnimationSystem(ac, pc, vc, rc));
     }
 
 }
