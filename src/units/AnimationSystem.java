@@ -14,6 +14,7 @@ public class AnimationSystem extends AbstractSystem {
     public void update() {
         double speed = 4;
         Vec2 direction = dc.path.get(0).subtract(pc.pos).normalize();
+        Vec2 vel = direction.multiply(speed);
 //        ac.legL.target = pc.pos.add(direction.multiply(30)).add(direction.normal().multiply(8));
 //        ac.legR.target = pc.pos.add(direction.multiply(30)).add(direction.normal().multiply(-8));
 //        double distL2 = ac.legL.target.subtract(ac.legL.pos).lengthSquared();
@@ -44,45 +45,36 @@ public class AnimationSystem extends AbstractSystem {
         ac.legR.target = ac.legR.target.setY(pc.pos.y + 8 * c_d + s_d * speed * 30 / r);
 
         Vec2 dxy = ac.legL.pos.subtract(ac.legL.target);
-        ldist = sqrt(dx * dx + dy * dy) + 0.1;
+        double ldist = dxy.length() + 0.1;
+        boolean foot_down = false;
         if (speed < 1 && ldist < 2) {
-            foot_down = 0;
-        } else if (ldist > d) {
-            foot_down = 1;
+            //foot_down = 0;
+        } else if (ldist > ac.d) {
+            foot_down = true;
         }
 
-        dx = rfoot_x - rfoot_targetx;
-        dy = rfoot_y - rfoot_targety;
-        rdist = sqrt(dx * dx + dy * dy) + 0.1;
+        dxy = ac.legR.pos.subtract(ac.legR.target);
+        double rdist = dxy.length() + 0.1;
         if (speed < 1 && rdist < 2) {
-            foot_down = 1;
-        } else if (rdist > d) {
-            foot_down = 0;
+            foot_down = true;
+        } else if (ldist > ac.d) {
+            foot_down = false;
         }
 
-        if (foot_down == 1) {
-            lfoot_x += ((lfoot_targetx - lfoot_x) / ldist) * min(r, ldist);
-            lfoot_y += ((lfoot_targety - lfoot_y) / ldist) * min(r, ldist);
+        if (foot_down) {
+            ac.legL.pos = ac.legL.pos.add(ac.legL.target.subtract(ac.legL.pos).multiply(Math.min(1, r / ldist)));
+        } else {
+            ac.legR.pos = ac.legR.pos.add(ac.legR.target.subtract(ac.legR.pos).multiply(Math.min(1, r / rdist)));
         }
-
-        if (foot_down == 0) {
-            rfoot_x += ((rfoot_targetx - rfoot_x) / rdist) * min(r, rdist);
-            rfoot_y += ((rfoot_targety - rfoot_y) / rdist) * min(r, rdist);
-        }
-//makes the character look like it's running if it's going fast enough
+        //makes the character look like it's running if it's going fast enough
         if (speed > 2) {
-            lfoot_x += hspeed / 2;
-            rfoot_x += hspeed / 2;
-            lfoot_y += vspeed / 2;
-            rfoot_y += vspeed / 2;
+            ac.legL.pos = ac.legL.pos.add(vel.multiply(.5));
+            ac.legR.pos = ac.legR.pos.add(vel.multiply(.5));
         }
 
-        if (ldist > d && rdist > d) {
-            lfoot_x = x - 8 * s_d;
-            lfoot_y = y - 8 * c_d;
-            rfoot_x = x + 8 * s_d;
-            rfoot_y = y + 8 * c_d;
+        if (ldist > ac.d && rdist > ac.d) {
+            ac.legL.pos = new Vec2(pc.pos.x - 8 * s_d, pc.pos.y - 8 * c_d);
+            ac.legR.pos = new Vec2(pc.pos.x + 8 * s_d, pc.pos.y + 8 * c_d);
         }
     }
-
 }
