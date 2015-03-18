@@ -15,11 +15,11 @@ public class Unit extends AbstractEntity {
         RotationComponent rc = add(new RotationComponent());
         SpriteComponent sc = new SpriteComponent("cavemanHead");
         AnimationComponent ac = new AnimationComponent(pos);
-        //DestinationComponent dc = add(new DestinationComponent());
+        DestinationComponent dc = add(new DestinationComponent());
 
         //Systems
         add(new VelocitySystem(pc, vc));
-        add(new DestinationSystem(pc, vc));
+        add(new DestinationSystem(pc, vc, dc));
         add(new RenderSystem(pc, rc, sc));
         add(new AnimationSystem(ac,pc,vc,rc));
     }
