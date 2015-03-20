@@ -5,10 +5,12 @@ import core.Vec2;
 
 public class AnimationComponent extends AbstractComponent {
 
-    public boolean footDown;
+    public boolean leftFootDown;
     public int armPose;
-    public double d = 36;
-
+    //public double d = 36;
+    public double time;
+    public double stride = 50;
+    public double width = 10;
     public Limb legL, legR, armL, armR;
 
     public AnimationComponent(Vec2 pos) {

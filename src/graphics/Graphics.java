@@ -22,9 +22,8 @@ public abstract class Graphics {
         newL.add(path.get(path.size() - 1));
         path = newL;
         //Draw
-        glPushMatrix();
         glDisable(GL_TEXTURE_2D);
-        glColor3d(1, 1, 1);
+        Color4d.WHITE.glColor();
         glBegin(GL_TRIANGLE_STRIP);
         {
             Vec2 p1 = path.get(0).add(path.get(0).subtract(path.get(1)).setLength(30));
@@ -34,13 +33,12 @@ public abstract class Graphics {
                 Vec2 b = path.get(i);
                 Vec2 c = b.add(b.subtract(a).normal().setLength(20 * (path.size() - i) / path.size()));
                 Vec2 d = b.add(b.subtract(a).normal().setLength(-20 * (path.size() - i) / path.size()));
-                glVertex2d(c.x, c.y);
-                glVertex2d(d.x, d.y);
+                c.glVertex();
+                d.glVertex();
             }
-            glVertex2d(path.get(path.size() - 1).x, path.get(path.size() - 1).y);
+            path.get(path.size() - 1).glVertex();
         }
         glEnd();
-        glPopMatrix();
     }
 
     public static void drawLine(Vec2 start, Vec2 end) {
@@ -48,17 +46,15 @@ public abstract class Graphics {
     }
 
     public static void drawLine(Vec2 start, Vec2 end, Color4d color, int width) {
-        glPushMatrix();
         glDisable(GL_TEXTURE_2D);
         glLineWidth(width);
         color.glColor();
         glBegin(GL_LINES);
         {
-            glVertex2d(start.x, start.y);
-            glVertex2d(end.x, end.y);
+            start.glVertex();
+            end.glVertex();
         }
         glEnd();
-        glPopMatrix();
     }
 
     public static void drawSprite(Texture s, Vec2 pos, Vec2 scale, double angle, Color4d color) {
@@ -95,6 +91,20 @@ public abstract class Graphics {
     public static void drawText(String s, String font, Vec2 pos, Color c) {
         TextureImpl.bindNone();
         FontContainer.get(font).drawString((float) pos.x, (float) pos.y, s, c);
+    }
+
+    public static void drawWideLine(Vec2 start, Vec2 end, Color4d color, double width) {
+        glDisable(GL_TEXTURE_2D);
+        color.glColor();
+        Vec2 side = end.subtract(start).setLength(width).normal();
+        glBegin(GL_QUADS);
+        {
+            start.add(side).glVertex();
+            start.add(side.reverse()).glVertex();
+            end.add(side.reverse()).glVertex();
+            end.add(side).glVertex();
+        }
+        glEnd();
     }
 
     public static void fillEllipse(Vec2 pos, Vec2 size, Color4d color) {

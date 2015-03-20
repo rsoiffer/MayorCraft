@@ -61,7 +61,7 @@ public class WorldSystem extends AbstractSystem {
         if (zoom < 1) {
             zoom = 1;
         }
-        
+
         glPushMatrix();
         glScaled(zoom, zoom, 1);
         glTranslated(pos.x, pos.y, 0);
@@ -104,7 +104,7 @@ public class WorldSystem extends AbstractSystem {
             //Straight edges
 //            Graphics.drawLine(e.v0.pos, e.v1.pos, Color4d.BLACK, 1);
             //Noisy edges
-            if (e.water == 0 || !e.isLand) {
+            if (e.water == 0 || !e.isLand && (e.p0.isLand || e.p1.isLand)) {
                 {
                     glBegin(GL_LINE_STRIP);
                     {
@@ -120,15 +120,18 @@ public class WorldSystem extends AbstractSystem {
         new Color4d(.1, .2, 1, 1).glColor();
         for (Edge e : world.edges) {
             if (e.water > 0 && e.isLand) {
-                glLineWidth(zoom * 1.5f * (float) Math.sqrt(e.water));
-                glBegin(GL_LINE_STRIP);
-                {
-                    for (Vec2 v : e.noisePath) {
-                        glVertex2d(v.x, v.y);
-                        //glVertex2d(v.x+ e.v0.elevation*100*Math.sin(rot), v.y + e.v0.elevation*100*Math.cos(rot));
-                    }
+                for (int i = 0; i < e.noisePath.size() - 1; i++) {
+                    Graphics.drawWideLine(e.noisePath.get(i), e.noisePath.get(i + 1), new Color4d(.1, .2, 1, 1), 1.5 * Math.sqrt(e.water));
                 }
-                glEnd();
+//                glLineWidth(zoom * 1.5f * (float) Math.sqrt(e.water));
+//                glBegin(GL_LINE_STRIP);
+//                {
+//                    for (Vec2 v : e.noisePath) {
+//                        glVertex2d(v.x, v.y);
+//                        //glVertex2d(v.x+ e.v0.elevation*100*Math.sin(rot), v.y + e.v0.elevation*100*Math.cos(rot));
+//                    }
+//                }
+//                glEnd();
             }
         }
 

@@ -1,5 +1,7 @@
 package core;
 
+import static org.lwjgl.opengl.GL11.glVertex2d;
+
 public class Vec2 {
 
     public final double x;
@@ -38,6 +40,10 @@ public class Vec2 {
             return x == v.x && y == v.y;
         }
         return false;
+    }
+
+    public void glVertex() {
+        glVertex2d(x, y);
     }
 
     public Vec2 interpolate(Vec2 other, double amt) {

@@ -1,12 +1,8 @@
 package units;
 
 import core.AbstractSystem;
-import core.Color4d;
 import core.Vec2;
 import graphics.Graphics;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
 import movement.PositionComponent;
 import movement.RotationComponent;
 import movement.VelocityComponent;
@@ -27,77 +23,144 @@ public class AnimationSystem extends AbstractSystem {
 
     @Override
     public void update() {
+        //Variables
         double speed = vc.vel.length();
-        Vec2 direction = vc.vel.multiply(1 / speed);
-
-        //optimization code
-        double s_d = direction.y;
-        double c_d = direction.x;
-
-        double rotation_speed = 10;
-
-        double r = Math.max(1, speed * 2.3);
-
-        double target_direction = direction.direction();
-        double diff_direction = Math.abs(target_direction - rc.rot + 4 * Math.PI) % 2 * Math.PI;
-        if (diff_direction < rotation_speed) {
-            rc.rot = target_direction;
-        } else if (diff_direction < 180) {
-            rc.rot += rotation_speed;
+        Vec2 direction;
+        if (speed > 0) {
+            rc.rot = vc.vel.direction();
+            direction = vc.vel.multiply(1 / speed);
         } else {
-            rc.rot -= rotation_speed;
+            direction = new Vec2(Math.cos(rc.rot), Math.sin(rc.rot));
         }
+        Vec2 left = direction.normal().multiply(ac.width);
+        Vec2 right = left.reverse();
 
-        //arm_direction = rc.rot;
-        ac.legL.target = ac.legL.target.setX(pc.pos.x - 8 * s_d + c_d * speed * 30 / r);
-        ac.legL.target = ac.legL.target.setY(pc.pos.y - 8 * c_d + s_d * speed * 30 / r);
-        ac.legR.target = ac.legR.target.setX(pc.pos.x + 8 * s_d + c_d * speed * 30 / r);
-        ac.legR.target = ac.legR.target.setY(pc.pos.y + 8 * c_d + s_d * speed * 30 / r);
+        //How fast to run the animation
+        double walkSpeed = Math.max(1, speed) / ac.stride;
 
-        Vec2 dxy = ac.legL.pos.subtract(ac.legL.target);
-        double ldist = dxy.length() + 0.1;
-        boolean foot_down = false;
-        if (speed < 1 && ldist < 2) {
-            //foot_down = 0;
-        } else if (ldist > ac.d) {
-            foot_down = true;
-        }
-
-        dxy = ac.legR.pos.subtract(ac.legR.target);
-        double rdist = dxy.length() + 0.1;
-        if (speed < 1 && rdist < 2) {
-            foot_down = true;
-        } else if (ldist > ac.d) {
-            foot_down = false;
-        }
-
-        if (foot_down) {
-            ac.legL.pos = ac.legL.pos.add(ac.legL.target.subtract(ac.legL.pos).multiply(Math.min(1, r / ldist)));
+        //Walk forwards
+        if (speed > 0) {
+            ac.time += walkSpeed;
         } else {
-            ac.legR.pos = ac.legR.pos.add(ac.legR.target.subtract(ac.legR.pos).multiply(Math.min(1, r / rdist)));
-        }
-        //makes the character look like it's running if it's going fast enough
-        if (speed > 2) {
-            ac.legL.pos = ac.legL.pos.add(vc.vel.multiply(.5));
-            ac.legR.pos = ac.legR.pos.add(vc.vel.multiply(.5));
+            //Round
+            if (Math.abs(ac.time - Math.round(ac.time)) < .01) {
+                ac.time = Math.round(ac.time);
+            } else {
+                //Figure out which direction to complete the animation to move the legs back to 0
+                if (ac.time - (int) ac.time > .5) {
+                    ac.time += walkSpeed;
+                } else {
+                    ac.time -= walkSpeed;
+                }
+            }
         }
 
-        if (ldist > ac.d && rdist > ac.d) {
-            ac.legL.pos = new Vec2(pc.pos.x - 8 * s_d, pc.pos.y - 8 * c_d);
-            ac.legR.pos = new Vec2(pc.pos.x + 8 * s_d, pc.pos.y + 8 * c_d);
-        }
+        //Turn time into a position - triangle wave
+        double offset = ac.stride * (.5 - Math.abs((ac.time + .5) % 2 - 1));
+        double ahead = 2 * speed;
 
-        //RENDER CODE
+        //Move feet
+        ac.legL.target = pc.pos.add(left).add(direction.multiply(offset + ahead));
+        ac.legR.target = pc.pos.add(right).add(direction.multiply(-offset + ahead));
+        ac.legL.pos = ac.legL.pos.interpolate(ac.legL.target, .5);
+        ac.legR.pos = ac.legR.pos.interpolate(ac.legR.target, .5);
+
+        //Move arms
+        ac.armL.target = pc.pos.add(left).add(direction.multiply(-offset + ahead));
+        ac.armR.target = pc.pos.add(right).add(direction.multiply(offset + ahead));
+        ac.armL.pos = ac.armL.pos.interpolate(ac.armL.target, .5);
+        ac.armR.pos = ac.armR.pos.interpolate(ac.armR.target, .5);
+
+        //Draw feet
         ac.legL.draw(rc.rot);
         ac.legR.draw(rc.rot);
-        //draw_sprite_ext(foot_sprite,0,lfoot_x,lfoot_y,1,1,facing_direction,c_white,1);
-        //draw_sprite_ext(foot_sprite,0,rfoot_x,rfoot_y,1,1,facing_direction,c_white,1);
 
-//        lleg_x = x - 6 * sin(facing_direction * pi / 180);
-//        lleg_y = y - 6 * cos(facing_direction * pi / 180);
-//        rleg_x = x + 6 * sin(facing_direction * pi / 180);
-//        rleg_y = y + 6 * cos(facing_direction * pi / 180);
+        //Calculate legs and knees
+        Vec2 legL = pc.pos.add(left.multiply(.5));
+        Vec2 legR = pc.pos.add(right.multiply(.5));
+        Vec2 kneeL = legL.interpolate(ac.legL.pos, .5).add(direction.multiply(ac.width / 4));
+        Vec2 kneeR = legR.interpolate(ac.legR.pos, .5).add(direction.multiply(ac.width / 4));
+
+        //Draw legs and knees
+        Graphics.drawWideLine(ac.legL.pos, kneeL, ac.legL.color1, 4);
+        Graphics.drawWideLine(ac.legR.pos, kneeR, ac.legR.color1, 4);
+        Graphics.fillEllipse(kneeL, new Vec2(4, 4), ac.legL.color2);
+        Graphics.fillEllipse(kneeR, new Vec2(4, 4), ac.legL.color2);
+        Graphics.drawWideLine(legL, kneeL, ac.legL.color2, 4);
+        Graphics.drawWideLine(legR, kneeR, ac.legR.color2, 4);
+
+        //Draw arms
+        ac.armL.draw(rc.rot);
+        ac.armR.draw(rc.rot);
         /*
+         //optimization code
+         double s_d = direction.y;
+         double c_d = direction.x;
+
+         double rotation_speed = 10;
+
+         double r = Math.max(1, speed * 2.3);
+
+         double target_direction = direction.direction();
+         double diff_direction = Math.abs(target_direction - rc.rot + 4 * Math.PI) % 2 * Math.PI;
+         if (diff_direction < rotation_speed) {
+         rc.rot = target_direction;
+         } else if (diff_direction < 180) {
+         rc.rot += rotation_speed;
+         } else {
+         rc.rot -= rotation_speed;
+         }
+
+         //arm_direction = rc.rot;
+         ac.legL.target = ac.legL.target.setX(pc.pos.x - 8 * s_d + c_d * speed * 30 / r);
+         ac.legL.target = ac.legL.target.setY(pc.pos.y - 8 * c_d + s_d * speed * 30 / r);
+         ac.legR.target = ac.legR.target.setX(pc.pos.x + 8 * s_d + c_d * speed * 30 / r);
+         ac.legR.target = ac.legR.target.setY(pc.pos.y + 8 * c_d + s_d * speed * 30 / r);
+
+         Vec2 dxy = ac.legL.pos.subtract(ac.legL.target);
+         double ldist = dxy.length() + 0.1;
+         boolean foot_down = false;
+         if (speed < 1 && ldist < 2) {
+         //foot_down = 0;
+         } else if (ldist > ac.d) {
+         foot_down = true;
+         }
+
+         dxy = ac.legR.pos.subtract(ac.legR.target);
+         double rdist = dxy.length() + 0.1;
+         if (speed < 1 && rdist < 2) {
+         foot_down = true;
+         } else if (ldist > ac.d) {
+         foot_down = false;
+         }
+
+         if (foot_down) {
+         ac.legL.pos = ac.legL.pos.add(ac.legL.target.subtract(ac.legL.pos).multiply(Math.min(1, r / ldist)));
+         } else {
+         ac.legR.pos = ac.legR.pos.add(ac.legR.target.subtract(ac.legR.pos).multiply(Math.min(1, r / rdist)));
+         }
+         //makes the character look like it's running if it's going fast enough
+         if (speed > 2) {
+         ac.legL.pos = ac.legL.pos.add(vc.vel.multiply(.5));
+         ac.legR.pos = ac.legR.pos.add(vc.vel.multiply(.5));
+         }
+
+         if (ldist > ac.d && rdist > ac.d) {
+         ac.legL.pos = new Vec2(pc.pos.x - 8 * s_d, pc.pos.y - 8 * c_d);
+         ac.legR.pos = new Vec2(pc.pos.x + 8 * s_d, pc.pos.y + 8 * c_d);
+         }
+
+         //RENDER CODE
+         ac.legL.draw(rc.rot);
+         ac.legR.draw(rc.rot);
+         //draw_sprite_ext(foot_sprite,0,lfoot_x,lfoot_y,1,1,facing_direction,c_white,1);
+         //draw_sprite_ext(foot_sprite,0,rfoot_x,rfoot_y,1,1,facing_direction,c_white,1);
+
+         //        lleg_x = x - 6 * sin(facing_direction * pi / 180);
+         //        lleg_y = y - 6 * cos(facing_direction * pi / 180);
+         //        rleg_x = x + 6 * sin(facing_direction * pi / 180);
+         //        rleg_y = y + 6 * cos(facing_direction * pi / 180);
+         /*
          lknee_x=(lleg_x+lfoot_x)/2+6*cos(facing_direction*pi/180);
          lknee_y=(lleg_y+lfoot_y)/2-6*sin(facing_direction*pi/180);
          rknee_x=(rleg_x+rfoot_x)/2+6*cos(facing_direction*pi/180);
@@ -125,7 +188,7 @@ public class AnimationSystem extends AbstractSystem {
          larm_y=(y-18*cos(facing_direction*pi/180))+(y-lfoot_y)*0.3;
          rarm_x=(x+18*sin(facing_direction*pi/180))+(x-rfoot_x)*0.3;
          rarm_y=(y+18*cos(facing_direction*pi/180))+(y-rfoot_y)*0.3;
-    
+
          lelbow_x=(lleg_x+larm_x)/2-6*cos(facing_direction*pi/180);
          lelbow_y=(lleg_y+larm_y)/2+6*sin(facing_direction*pi/180);
          relbow_x=(rleg_x+rarm_x)/2-6*cos(facing_direction*pi/180);
@@ -143,14 +206,14 @@ public class AnimationSystem extends AbstractSystem {
          larm_x=x+12*cos((facing_direction+60)*pi/180);
          larm_y=y-12*sin((facing_direction+60)*pi/180);
          rarm_x=x+18*cos((facing_direction-20)*pi/180);
-         rarm_y=y-18*sin((facing_direction-20)*pi/180); 
+         rarm_y=y-18*sin((facing_direction-20)*pi/180);
          }
          if(arm_pose==2){
          //psychic arm pose
          larm_x=x+18*cos((facing_direction+20)*pi/180);
          larm_y=y-18*sin((facing_direction+20)*pi/180);
          rarm_x=x+12*cos((facing_direction-60)*pi/180);
-         rarm_y=y-12*sin((facing_direction-60)*pi/180); 
+         rarm_y=y-12*sin((facing_direction-60)*pi/180);
          }
          if(arm_pose==3){
          //2-handed ranged weapon
@@ -158,7 +221,7 @@ public class AnimationSystem extends AbstractSystem {
          larm_y=y-18*sin((facing_direction)*pi/180);
          rarm_x=x+10*cos((facing_direction)*pi/180);
          rarm_y=y-10*sin((facing_direction)*pi/180);
-    
+
          lelbow_x=x+10*cos((facing_direction+50)*pi/180);
          lelbow_y=y-10*sin((facing_direction+50)*pi/180);
          relbow_x=x+10*cos((facing_direction-80)*pi/180);

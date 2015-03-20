@@ -9,7 +9,7 @@ import voronoi.Voronoi;
 
 public class World extends AbstractEntity {
 
-    public static final int POINTS = 10000;
+    public static final int POINTS = 1000;
     private static final int BUCKETS = POINTS / 10;
     public static final int SIZE = 500;
     List<Center> centers = new ArrayList();
