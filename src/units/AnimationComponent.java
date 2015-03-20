@@ -10,7 +10,7 @@ public class AnimationComponent extends AbstractComponent {
     //public double d = 36;
     public double time;
     public double stride = 50;
-    public double width = 10;
+    public double width = 8;
     public Limb legL, legR, armL, armR;
 
     public AnimationComponent(Vec2 pos) {

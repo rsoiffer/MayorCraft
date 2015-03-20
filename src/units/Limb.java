@@ -18,15 +18,11 @@ public class Limb {
     public Limb(String sprite) {
         pos = new Vec2();
         target = new Vec2();
-        color1 = Color4d.RED;
+        color1 = Color4d.BLUE;
         color2 = Color4d.BLUE;
         try {
             this.sprite = SpriteContainer.loadSprite(sprite, 1, 1).get(0);
         } catch (IOException ex) {
         }
-    }
-
-    public void draw(double angle) {
-        Graphics.drawSprite(sprite, pos, new Vec2(1, 1), angle, Color4d.WHITE);
     }
 }

@@ -104,7 +104,7 @@ public class WorldSystem extends AbstractSystem {
             //Straight edges
 //            Graphics.drawLine(e.v0.pos, e.v1.pos, Color4d.BLACK, 1);
             //Noisy edges
-            if (e.water == 0 || !e.isLand && (e.p0.isLand || e.p1.isLand)) {
+            if ((e.water == 0 || !e.isLand) && (e.p0.isLand || e.p1.isLand)) {
                 {
                     glBegin(GL_LINE_STRIP);
                     {
