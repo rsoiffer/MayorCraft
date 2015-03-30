@@ -66,7 +66,7 @@ public class Building extends AbstractEntity{
     /**SizeComponent*/ FooSystem sc = add(new FooSystem());
     /**LevelComponent*/ FooSystem lc = add(new FooSystem());
     //systems
-    /**ValueSystem*/ FooSystem vs = add(new FooSystem());
+    /**SellSystem*/ FooSystem vs = add(new FooSystem());
     /**UnitCreationSystem*/ FooSystem us = add(new FooSystem());
     /**TypeSystem*/ FooSystem ts = add(new FooSystem());
     /**IncomeSystem*/ FooSystem is = add(new FooSystem());

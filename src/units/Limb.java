@@ -25,4 +25,14 @@ public class Limb {
         } catch (IOException ex) {
         }
     }
+    public Limb(String sprite, Color4d c1, Color4d c2){
+        pos = new Vec2();
+        target = new Vec2();
+        color1 = c1;
+        color2 = c2;
+          try {
+            this.sprite = SpriteContainer.loadSprite(sprite, 1, 1).get(0);
+        } catch (IOException ex) {
+        }
+    }
 }
