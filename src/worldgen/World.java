@@ -11,7 +11,7 @@ public class World extends AbstractEntity {
 
     public static final int POINTS = 1000;
     private static final int BUCKETS = POINTS / 10;
-    public static final int SIZE = 500;
+    public static final int SIZE = 20000;
     List<Center> centers = new ArrayList();
     List<Edge> edges = new ArrayList();
     List<Corner> corners = new ArrayList();
@@ -75,6 +75,14 @@ public class World extends AbstractEntity {
                 c.elevation += co.elevation;
             }
             c.elevation /= c.corners.size();
+        }
+        //Order edges
+        for (Edge e : edges) {
+            if (e.v1.elevation > e.v0.elevation) {
+                Corner c = e.v0;
+                e.v0 = e.v1;
+                e.v1 = c;
+            }
         }
     }
 
@@ -144,11 +152,11 @@ public class World extends AbstractEntity {
         for (Edge e : edges) {
             e.noisePath.add(e.v0.pos);
             if (e.water > 0) {
-                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 4 * Math.sqrt(e.water), e.noisePath);
+                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 20/* Math.sqrt(e.water)*/, e.noisePath);
             } else if (e.p0.isLand != e.p1.isLand) {
-                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 2, e.noisePath);
-            } else {
                 subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 4, e.noisePath);
+            } else {
+                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 12, e.noisePath);
             }
             e.noisePath.add(e.v1.pos);
         }
@@ -274,8 +282,8 @@ public class World extends AbstractEntity {
             return;
         }
         // Subdivide the quadrilateral
-        double p = .2 + .6 * Math.random(); // vertical (along A-D and B-C)
-        double q = .2 + .6 * Math.random(); // horizontal (along A-B and D-C)
+        double p = .3 + .4 * Math.random(); // vertical (along A-D and B-C)
+        double q = .3 + .4 * Math.random(); // horizontal (along A-B and D-C)
         // Midpoints
         Vec2 e = a.interpolate(d, p);
         Vec2 f = b.interpolate(c, p);

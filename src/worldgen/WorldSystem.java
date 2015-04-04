@@ -2,23 +2,22 @@ package worldgen;
 
 import core.*;
 import graphics.Graphics;
-import static org.lwjgl.input.Keyboard.*;
-import org.lwjgl.input.Mouse;
+import graphics.RenderManagerComponent;
 import static org.lwjgl.opengl.GL11.*;
 
 public class WorldSystem extends AbstractSystem {
 
     private World world;
-    private double rot;
     private Vec2 pos;
-    private int zoom;
+    private static final Color4d RIVER = new Color4d(.1, .2, 1, 1);
+    private static final Color4d LAKE = new Color4d(.2, .4, 1, 1);
 
     public WorldSystem(World world) {
         this.world = world;
         pos = new Vec2();
     }
 
-    public Color4d getColor(Center c, Corner co) {
+    public Color4d getColor(Center c) {
         if (c.elevation > 10) {
             return Color4d.RED; //Error
         }
@@ -29,118 +28,137 @@ public class WorldSystem extends AbstractSystem {
                 return new Color4d(.2, .8 - c.elevation * .7, 0, 1); //Land
             }
         } else {
-            if (c.isOnOcean) {
-                return new Color4d(0, 0, .7, 1); //Ocean
-            } else {
-                return new Color4d(.2, .4, 1, 1); //Lake
-            }
+            return waterColor(c.elevation);
+//            if (c.isOnOcean) {
+//                return new Color4d(0, 0, .7, 1); //Ocean
+//            } else {
+//                return new Color4d(.2, .4, 1, 1); //Lake
+//            }
         }
     }
 
     @Override
     public void update() {
-        if (Keys.isDown(KEY_LEFT)) {
-            rot += .05;
-        }
-        if (Keys.isDown(KEY_RIGHT)) {
-            rot -= .05;
-        }
-        if (Keys.isDown(KEY_W)) {
-            pos = pos.add(new Vec2(0, -20. / zoom));
-        }
-        if (Keys.isDown(KEY_A)) {
-            pos = pos.add(new Vec2(20. / zoom, 0));
-        }
-        if (Keys.isDown(KEY_S)) {
-            pos = pos.add(new Vec2(0, 20. / zoom));
-        }
-        if (Keys.isDown(KEY_D)) {
-            pos = pos.add(new Vec2(-20. / zoom, 0));
-        }
-        zoom += Mouse.getDWheel() / 120;
-        if (zoom < 1) {
-            zoom = 1;
-        }
+        RenderManagerComponent rmc = Main.gameManager.getComponent(RenderManagerComponent.class);
 
         glPushMatrix();
-        glScaled(zoom, zoom, 1);
         glTranslated(pos.x, pos.y, 0);
-        glRotated(rot * 180 / Math.PI, 0, 0, 1);
-        //glScaled(1,.5,1);
 
         glEnable(GL_LINE_SMOOTH);
         glDisable(GL_TEXTURE_2D);
 
-        Graphics.fillRect(new Vec2(-World.SIZE, -World.SIZE), new Vec2(2 * World.SIZE, 2 * World.SIZE), new Color4d(0, 0, .7, 1));
+        Graphics.fillRect(new Vec2(rmc.viewX, rmc.viewY), new Vec2(rmc.viewWidth, rmc.viewHeight), waterColor(0));
 
+        //Draw land
         for (Center c : world.centers) {
-            //Straight edges
-//            glBegin(GL_POLYGON);
-//            {
-//                for (Corner co : c.corners) {
-//                    getColor(c, co).glColor();
-//                    glVertex2d(co.pos.x+ co.elevation*100*Math.sin(rot), co.pos.y + co.elevation*100*Math.cos(rot));
-//                }
-//            }
-//            glEnd();
-            //Noisy edges
-            getColor(c, null).glColor();
-            for (Edge e : c.borders) {
-                glBegin(GL_TRIANGLE_FAN);
-                {
-                    glVertex2d(c.pos.x, c.pos.y);
-                    for (int i = 0; i < e.noisePath.size(); i++) {
-                        glVertex2d(e.noisePath.get(i).x, e.noisePath.get(i).y);
+            if (c.inView(rmc)) {
+                if (c.isLand) {
+                    getColor(c).glColor();
+                    for (Edge e : c.borders) {
+                        glBegin(GL_TRIANGLE_FAN);
+                        {
+                            glVertex2d(c.pos.x, c.pos.y);
+                            for (int i = 0; i < e.noisePath.size(); i++) {
+                                glVertex2d(e.noisePath.get(i).x, e.noisePath.get(i).y);
 
+                            }
+                        }
+                        glEnd();
                     }
                 }
-                glEnd();
             }
         }
-
+        //Draw borders
         Color4d.BLACK.glColor();
         glLineWidth(1);
         for (Edge e : world.edges) {
-            //Straight edges
-//            Graphics.drawLine(e.v0.pos, e.v1.pos, Color4d.BLACK, 1);
-            //Noisy edges
-            if ((e.water == 0 || !e.isLand) && (e.p0.isLand || e.p1.isLand)) {
-                {
-                    glBegin(GL_LINE_STRIP);
+            if (e.inView(rmc)) {
+                if ((e.water == 0 || !e.isLand) && (e.p0.isLand || e.p1.isLand)) {
                     {
-                        for (Vec2 v : e.noisePath) {
-                            glVertex2d(v.x, v.y);
+                        glBegin(GL_LINE_STRIP);
+                        {
+                            for (Vec2 v : e.noisePath) {
+                                glVertex2d(v.x, v.y);
+                            }
+                        }
+                        glEnd();
+                    }
+                }
+            }
+        }
+        //Draw rivers
+        for (Edge e : world.edges) {
+            if (e.inView(rmc)) {
+                if (e.water > 0 && e.isLand) {
+                    //New draw river
+                    Graphics.fillEllipse(e.v0.pos, new Vec2(10 * Math.sqrt(e.water), 10 * Math.sqrt(e.water)), waterColor(e.v0.elevation));
+                    glBegin(GL_TRIANGLE_STRIP);
+                    {
+                        //Main part
+                        Vec2 dir = e.v1.pos.subtract(e.v0.pos);
+                        for (int i = 0; i < e.noisePath.size() - 2; i++) {
+                            Vec2 start = e.noisePath.get(i);
+                            Vec2 end = e.noisePath.get(i + 1);
+                            Vec2 side = end.subtract(start).setLength(10 * Math.sqrt(e.water)).normal();
+                            start.add(side).glVertex();
+                            start.add(side.reverse()).glVertex();
+                            double perc = (end.dot(dir) - e.v0.pos.dot(dir)) / dir.lengthSquared();
+                            waterColor(e.v0.elevation * (1 - perc) + e.v1.elevation * perc).glColor();
+                            //waterColor(e.v0.elevation * (1 - (double) i / e.noisePath.size()) + e.v1.elevation * ((double) i / e.noisePath.size())).glColor();
+                            end.add(side).glVertex();
+                            end.add(side.reverse()).glVertex();
+                        }
+                        //Blend with next river
+                        Edge ed = e.v1.edgeTo(e.v1.downslope);
+                        Vec2 start = e.noisePath.get(e.noisePath.size() - 2);
+                        Vec2 end = e.v1.pos;
+                        Vec2 side = end.subtract(start).setLength(10 * Math.sqrt(e.water)).normal();
+                        start.add(side).glVertex();
+                        start.add(side.reverse()).glVertex();
+                        waterColor(e.v1.elevation).glColor();
+                        if (!ed.isLand) {
+                            end.add(side).glVertex();
+                            end.add(side.reverse()).glVertex();
+                        } else {
+                            Vec2 side1 = end.subtract(start).setLength(10 * Math.sqrt(ed.water)).normal();
+                            end.add(side1).glVertex();
+                            end.add(side1.reverse()).glVertex();
+                            Vec2 start2 = ed.v0.pos;
+                            Vec2 end2 = ed.noisePath.get(1);
+                            Vec2 side2 = end2.subtract(start2).setLength(10 * Math.sqrt(ed.water)).normal();
+                            start2.add(side2).glVertex();
+                            start2.add(side2.reverse()).glVertex();
                         }
                     }
                     glEnd();
+                    Graphics.fillEllipse(e.v1.pos, new Vec2(10 * Math.sqrt(e.water), 10 * Math.sqrt(e.water)), waterColor(e.v1.elevation));
                 }
             }
         }
-        //Rivers
-        new Color4d(.1, .2, 1, 1).glColor();
-        for (Edge e : world.edges) {
-            if (e.water > 0 && e.isLand) {
-                for (int i = 0; i < e.noisePath.size() - 1; i++) {
-                    Graphics.drawWideLine(e.noisePath.get(i), e.noisePath.get(i + 1), new Color4d(.1, .2, 1, 1), 1.5 * Math.sqrt(e.water));
-                }
-//                glLineWidth(zoom * 1.5f * (float) Math.sqrt(e.water));
-//                glBegin(GL_LINE_STRIP);
-//                {
-//                    for (Vec2 v : e.noisePath) {
-//                        glVertex2d(v.x, v.y);
-//                        //glVertex2d(v.x+ e.v0.elevation*100*Math.sin(rot), v.y + e.v0.elevation*100*Math.cos(rot));
-//                    }
-//                }
-//                glEnd();
-            }
-        }
+        //Draw water
+        for (Center c : world.centers) {
+            if (c.inView(rmc)) {
+                if (!c.isLand) {
+                    getColor(c).glColor();
+                    for (Edge e : c.borders) {
+                        glBegin(GL_TRIANGLE_FAN);
+                        {
+                            glVertex2d(c.pos.x, c.pos.y);
+                            for (int i = 0; i < e.noisePath.size(); i++) {
+                                glVertex2d(e.noisePath.get(i).x, e.noisePath.get(i).y);
 
-        for (Corner c : world.corners) {
-            if (c.isLand && !c.isCoast) {
-                //Graphics.drawLine(c.pos, c.downslope.pos, Color4d.BLUE, 2);
+                            }
+                        }
+                        glEnd();
+                    }
+                }
             }
         }
         glPopMatrix();
+    }
+
+    public Color4d waterColor(double elevation) {
+        return new Color4d(elevation / 4, elevation / 2, 1, 1);
     }
 
 }

@@ -1,6 +1,7 @@
 package worldgen;
 
 import core.Vec2;
+import graphics.RenderManagerComponent;
 import java.util.*;
 
 public class Center {
@@ -38,7 +39,23 @@ public class Center {
         return r.multiply(1. / corners.size());
     }
 
-    void fix() {
-
+    public boolean inView(RenderManagerComponent rmc) {
+        if (rmc.inView(pos)) {
+            return true;
+        }
+        if (pos.subtract(rmc.middle()).lengthSquared() > 10000000) {
+            return false;
+        }
+        for (Corner c : corners) {
+            if (rmc.inView(c.pos)) {
+                return true;
+            }
+        }
+        for (Edge e : borders) {
+            if (e.inView(rmc)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

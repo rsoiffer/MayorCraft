@@ -4,6 +4,7 @@ import core.AbstractSystem;
 import core.Keys;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
+import static org.lwjgl.input.Keyboard.*;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
@@ -96,6 +97,19 @@ public class RenderManagerSystem extends AbstractSystem {
 
     @Override
     public void update() {
+        if (Keys.isDown(KEY_W)) {
+            rmc.viewY += 20;
+        }
+        if (Keys.isDown(KEY_A)) {
+            rmc.viewX -= 20;
+        }
+        if (Keys.isDown(KEY_S)) {
+            rmc.viewY -= 20;
+        }
+        if (Keys.isDown(KEY_D)) {
+            rmc.viewX += 20;
+        }
+
         if (Keys.isPressed(Keyboard.KEY_F11)) {
             setDisplayMode(rmc.displayWidth, rmc.displayHeight, !Display.isFullscreen());
         }

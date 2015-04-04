@@ -21,19 +21,19 @@ public class AnimationSystem extends AbstractSystem {
         this.vc = vc;
         this.rc = rc;
     }
-    
-    public void drawLimb(Limb l, Vec2 direction, Vec2 side, double forward) {
+
+    public void drawLimb(Limb l, Vec2 direction, Vec2 side, double forward, double size) {
         //Draw end
         Graphics.drawSprite(l.sprite, l.pos, new Vec2(1, 1), rc.rot, Color4d.WHITE);
 
         //Calculate base and middle
         Vec2 base = pc.pos.add(side.multiply(.6));
-        Vec2 middle = base.interpolate(l.pos, .5).add(direction.multiply(ac.width*forward));
+        Vec2 middle = base.interpolate(l.pos, .5).add(direction.multiply(ac.width * forward));
 
         //Draw segments and middle
-        Graphics.drawWideLine(l.pos, middle, l.color1, 4);
-        Graphics.fillEllipse(middle, new Vec2(4, 4), l.color2);
-        Graphics.drawWideLine(base, middle, l.color2, 4);
+        Graphics.drawWideLine(l.pos, middle, l.color1, size);
+        Graphics.fillEllipse(middle, new Vec2(size, size), l.color2);
+        Graphics.drawWideLine(base, middle, l.color2, size);
 
     }
 
@@ -41,13 +41,24 @@ public class AnimationSystem extends AbstractSystem {
     public void update() {
         //Variables
         double speed = vc.vel.length();
-        Vec2 direction;
         if (speed > 0) {
-            rc.rot = vc.vel.direction();
-            direction = vc.vel.multiply(1 / speed);
-        } else {
-            direction = new Vec2(Math.cos(rc.rot), Math.sin(rc.rot));
+            double target = vc.vel.direction();
+            //Turn slowly
+            if ((target - rc.rot + 4 * Math.PI) % (2 * Math.PI) < .1) {
+                rc.rot = target;
+            } else {
+                //Figure out which direction to complete the animation to move the legs back to 0
+                if ((target - rc.rot + 4 * Math.PI) % (2 * Math.PI) > Math.PI) {
+                    rc.rot -= .1;
+                } else {
+                    rc.rot += .1;
+                }
+            }
+            rc.rot = (rc.rot + 2 * Math.PI) % (2 * Math.PI);
+            //rc.rot = vc.vel.direction();
         }
+        Vec2 direction = new Vec2(Math.cos(rc.rot), Math.sin(rc.rot));
+
         Vec2 left = direction.normal().multiply(ac.width);
         Vec2 right = left.reverse();
 
@@ -82,16 +93,25 @@ public class AnimationSystem extends AbstractSystem {
         ac.legR.pos = ac.legR.pos.interpolate(ac.legR.target, .5);
 
         //Move arms
-        ac.armL.target = pc.pos.add(left.multiply(2)).add(direction.multiply(1.2*(-offset + ahead)));
-        ac.armR.target = pc.pos.add(right.multiply(2)).add(direction.multiply(1.2*(offset + ahead)));
+        ac.armL.target = pc.pos.add(left.multiply(2)).add(direction.multiply(-offset + ahead));
+        ac.armR.target = pc.pos.add(right.multiply(2)).add(direction.multiply(offset + ahead));
         ac.armL.pos = ac.armL.pos.interpolate(ac.armL.target, .5);
         ac.armR.pos = ac.armR.pos.interpolate(ac.armR.target, .5);
 
-        //Draw feet
-        drawLimb(ac.legL, direction, left, .25);
-        drawLimb(ac.legR, direction, right, .25);
-        //Draw arms
-        drawLimb(ac.armL, direction, left, -.5);
-        drawLimb(ac.armR, direction, right, -.5);
+        if (speed > 0) {
+            //Draw feet
+            drawLimb(ac.legL, direction, left, .25, 4);
+            drawLimb(ac.legR, direction, right, .25, 4);
+            //Draw arms
+            drawLimb(ac.armL, direction, left, -.5, 3);
+            drawLimb(ac.armR, direction, right, -.5, 3);
+        } else {
+            //Draw feet
+            drawLimb(ac.legL, direction, left, 0, 4);
+            drawLimb(ac.legR, direction, right, 0, 4);
+            //Draw arms
+            drawLimb(ac.armL, direction, left, 0, 3);
+            drawLimb(ac.armR, direction, right, 0, 3);
+        }
     }
 }
