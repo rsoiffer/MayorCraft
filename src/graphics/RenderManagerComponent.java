@@ -5,33 +5,37 @@ import core.Vec2;
 
 public class RenderManagerComponent extends AbstractComponent {
 
-    public int displayWidth;
-    public int displayHeight;
+    public Vec2 viewPos;
+    public Vec2 viewSize;
+    public Vec2 displaySize;
     public boolean startFullscreen;
-    public int viewX;
-    public int viewY;
-    public int viewWidth;
-    public int viewHeight;
+    public int zoom;
 
     public RenderManagerComponent() {
-        displayWidth = 1920;
-        displayHeight = 1080;
+        displaySize = new Vec2(1920, 1080);
         startFullscreen = true;
-        viewX = -1000;
-        viewY = -500;
-        viewWidth = 1920;
-        viewHeight = 1080;
+        viewPos = new Vec2();
+        viewSize = displaySize;
+        zoom = 0;
     }
 
     public boolean inView(Vec2 pos) {
-        return pos.x > viewX && pos.x < viewX + viewWidth && pos.y > viewY && pos.y < viewY + viewHeight;
+        return pos.x > LL().x && pos.x < UR().x && pos.y > LL().y && pos.y < UR().y;
     }
 
-    public Vec2 middle() {
-        return new Vec2(viewX + viewWidth / 2, viewY + viewHeight / 2);
+    public Vec2 LL() {
+        return viewPos.subtract(viewSize.multiply(.5));
+    }
+
+    public boolean nearInView(Vec2 pos, double buffer) {
+        return pos.x > LL().x - buffer && pos.x < UR().x + buffer && pos.y > LL().y - buffer && pos.y < UR().y + buffer;
     }
 
     public boolean potentiallyInView(Vec2 pos, Vec2 buffer) {
-        return pos.subtract(middle()).lengthSquared() < (viewWidth + buffer.x) * (viewWidth + buffer.x) + (viewHeight + buffer.y) * (viewHeight + buffer.y);
+        return pos.subtract(viewPos).lengthSquared() < (viewSize.x + buffer.x) * (viewSize.x + buffer.x) + (viewSize.y + buffer.y) * (viewSize.y + buffer.y);
+    }
+
+    public Vec2 UR() {
+        return viewPos.add(viewSize.multiply(.5));
     }
 }

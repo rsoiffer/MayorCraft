@@ -107,22 +107,17 @@ public abstract class Graphics {
         glEnd();
     }
 
-    public static void fillEllipse(Vec2 pos, Vec2 size, Color4d color) {
-        double detail = 50;
-        glPushMatrix();
-        glDisable(GL_TEXTURE_2D);
+    public static void fillEllipse(Vec2 pos, Vec2 size, Color4d color, double detail) {
+        //glDisable(GL_TEXTURE_2D);
         color.glColor();
-        glTranslated(pos.x, pos.y, 0);
-        glScaled(size.x, size.y, 1);
         glBegin(GL_TRIANGLE_FAN);
         {
-            glVertex2d(0, 0);
+            pos.glVertex();
             for (double angle = 0; angle <= detail; angle++) {
-                glVertex2d(Math.cos(angle / detail * Math.PI * 2), Math.sin(angle / detail * Math.PI * 2));
+                glVertex2d(pos.x + size.x * Math.cos(angle / detail * Math.PI * 2), pos.y + size.y * Math.sin(angle / detail * Math.PI * 2));
             }
         }
         glEnd();
-        glPopMatrix();
     }
 
     public static void fillRect(Vec2 pos, Vec2 size, Color4d color) {

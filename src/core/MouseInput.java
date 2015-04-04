@@ -10,6 +10,7 @@ public abstract class MouseInput {
     private static ArrayList<Integer> down = new ArrayList();
     private static ArrayList<Integer> pressed = new ArrayList();
     private static ArrayList<Integer> released = new ArrayList();
+    private static int wheel;
 
     public static boolean isDown(int button) {
         return down.contains(button);
@@ -27,8 +28,8 @@ public abstract class MouseInput {
         RenderManagerComponent rmc = Main.gameManager.rmc;
         int w = Display.getWidth();
         int h = Display.getHeight();
-        int dw = rmc.viewWidth;
-        int dh = rmc.viewHeight;
+        int dw = (int) rmc.viewSize.x;
+        int dh = (int) rmc.viewSize.y;
         double vw, vh;
         if (w * dh > h * dw) {
             vh = h;
@@ -40,10 +41,15 @@ public abstract class MouseInput {
         double left = (w - vw) / 2;
         double bottom = (h - vh) / 2;
 
-        return new Vec2(rmc.viewX + (Mouse.getX() - left) * dw / vw, rmc.viewY + (Mouse.getY() - bottom) * dh / vh);
+        return new Vec2(rmc.LL().x + (Mouse.getX() - left) * dw / vw, rmc.LL().y + (Mouse.getY() - bottom) * dh / vh);
+    }
+
+    public static int wheel() {
+        return wheel;
     }
 
     public static void update() {
+        wheel = Mouse.getDWheel() / 120;
         pressed.clear();
         released.clear();
         while (Mouse.next()) {

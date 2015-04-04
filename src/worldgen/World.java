@@ -1,6 +1,7 @@
 package worldgen;
 
 import core.AbstractEntity;
+import core.Color4d;
 import core.Vec2;
 import java.util.*;
 import noise.Noise;
@@ -9,9 +10,9 @@ import voronoi.Voronoi;
 
 public class World extends AbstractEntity {
 
-    public static final int POINTS = 1000;
+    public static final int POINTS = 10000;
     private static final int BUCKETS = POINTS / 10;
-    public static final int SIZE = 20000;
+    public static final int SIZE = 50000;
     List<Center> centers = new ArrayList();
     List<Edge> edges = new ArrayList();
     List<Corner> corners = new ArrayList();
@@ -45,7 +46,7 @@ public class World extends AbstractEntity {
 //                if (e.v0 == e.v1) {
 //                    System.out.println("bad");
 //                }
-                double newElevation = c.elevation + .001;
+                double newElevation = c.elevation + .000001;
                 if (e.isLand) {
                     newElevation += 10000 * Math.random() + c.pos.subtract(n.pos).length();
                 }
@@ -61,11 +62,13 @@ public class World extends AbstractEntity {
         for (Corner c : corners) {
             if (c.elevation > .1) {
                 important.add(c);
+            } else {
+                c.elevation = 0;
             }
         }
         Collections.sort(important);
         for (int i = 0; i < important.size(); i++) {
-            important.get(i).elevation = 1.1 * (1 - Math.sqrt(1 - (double) i / important.size()));
+            important.get(i).elevation = 1.1 * (1 - Math.sqrt(1 - (double) (i + 1) / important.size()));
         }
         Collections.sort(corners);
         //Set center elevations
@@ -75,6 +78,15 @@ public class World extends AbstractEntity {
                 c.elevation += co.elevation;
             }
             c.elevation /= c.corners.size();
+            if (c.isLand) {
+                if (c.isOnOcean) {
+                    c.color = new Color4d(.8, .8, .5, 1); //Beach
+                } else {
+                    c.color = new Color4d(.2, .8 - c.elevation * .7, 0, 1); //Land
+                }
+            } else {
+                c.color = waterColor(c.elevation);
+            }
         }
         //Order edges
         for (Edge e : edges) {
@@ -91,7 +103,7 @@ public class World extends AbstractEntity {
         Noise noise = new Noise(Math.random() * 1000);
         for (Corner c : corners) {
             //Get random value between 0 and 1
-            double r = noise.multi(c.pos.x, c.pos.y, 8, .004) / 2 + .5;
+            double r = noise.multi(c.pos.x, c.pos.y, 8, 2. / SIZE) / 2 + .5;
             //Shape is determined by both random and distance
             if (r > c.pos.lengthSquared() / SIZE / SIZE) {
                 c.isLand = true;
@@ -151,14 +163,19 @@ public class World extends AbstractEntity {
     private void createNoisyLines() {
         for (Edge e : edges) {
             e.noisePath.add(e.v0.pos);
-            if (e.water > 0) {
-                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 20/* Math.sqrt(e.water)*/, e.noisePath);
-            } else if (e.p0.isLand != e.p1.isLand) {
-                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 4, e.noisePath);
-            } else {
-                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 12, e.noisePath);
-            }
             e.noisePath.add(e.v1.pos);
+            Vec2 impt = e.p0.pos;
+            if (centers.indexOf(e.p1) > centers.indexOf(e.p0)) {
+                impt = e.p1.pos;
+            }
+            if (e.water > 0) {
+                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 20/* Math.sqrt(e.water)*/, e.noisePath, impt);
+            } else if (e.p0.isLand != e.p1.isLand) {
+                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 12, e.noisePath, impt);
+            } else {
+                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 12, e.noisePath, impt);
+            }
+            //e.noisePath.add(e.v1.pos);
         }
     }
 
@@ -192,7 +209,7 @@ public class World extends AbstractEntity {
     }
 
     private void createRivers() {
-        for (int i = 0; i < SIZE / 2; i++) {
+        for (int i = 0; i < POINTS / 10; i++) {
             Corner c = corners.get((int) (corners.size() * Math.random()));
             if (c.elevation < .3) {
                 continue;
@@ -277,26 +294,66 @@ public class World extends AbstractEntity {
         cor2.touches.add(cen2);
     }
 
-    private void subdivide(Vec2 a, Vec2 b, Vec2 c, Vec2 d, double minLength, ArrayList<Vec2> list) {
-        if (a.subtract(c).lengthSquared() < minLength * minLength || b.subtract(d).lengthSquared() < minLength * minLength) {
+    private void subdivide(Vec2 a, Vec2 b, Vec2 c, Vec2 d, double minLength, ArrayList<Vec2> list, Vec2 impt) {
+        if (a.subtract(c).lengthSquared() < minLength * minLength) {// || b.subtract(d).lengthSquared() < minLength * minLength) {
             return;
         }
-        // Subdivide the quadrilateral
-        double p = .3 + .4 * Math.random(); // vertical (along A-D and B-C)
-        double q = .3 + .4 * Math.random(); // horizontal (along A-B and D-C)
-        // Midpoints
-        Vec2 e = a.interpolate(d, p);
-        Vec2 f = b.interpolate(c, p);
-        Vec2 g = a.interpolate(b, q);
-        Vec2 i = d.interpolate(c, q);
-        // Central point
-        Vec2 h = e.interpolate(f, q);
-        // Divide the quad into subquads, but meet at H
-        double s = .6 + .8 * Math.random();
-        double t = .6 + .8 * Math.random();
-        subdivide(a, g.interpolate(b, s), h, e.interpolate(d, t), minLength, list);
-        list.add(h);
-        subdivide(h, f.interpolate(c, s), c, i.interpolate(d, t), minLength, list);
+
+        Vec2 hor = c.subtract(a).normalize();
+        if (b.dot(hor) > c.dot(hor)) {
+            b = b.interpolate(a, (c.dot(hor) - a.dot(hor)) / (b.dot(hor) - a.dot(hor)));
+        }
+        if (b.dot(hor) < a.dot(hor)) {
+            b = b.interpolate(c, (a.dot(hor) - c.dot(hor)) / (b.dot(hor) - c.dot(hor)));
+        }
+        if (d.dot(hor) > c.dot(hor)) {
+            d = d.interpolate(a, (c.dot(hor) - a.dot(hor)) / (d.dot(hor) - a.dot(hor)));
+        }
+        if (d.dot(hor) < a.dot(hor)) {
+            d = d.interpolate(c, (a.dot(hor) - c.dot(hor)) / (d.dot(hor) - c.dot(hor)));
+        }
+
+        double bv = Math.abs(b.cross(hor) - a.cross(hor));
+        double dv = Math.abs(d.cross(hor) - a.cross(hor));
+
+        Vec2 p;
+        double h;
+        int count = 0;
+        do {
+            if (count++ > 100) {
+                return;
+            }
+            h = .3 + .4 * Math.random();
+            double v = 1 - .6 * Math.random() * Math.min(1, (c.dot(hor) - a.dot(hor)) / (bv + dv));
+            if (Math.random() * (bv + dv) - dv > 0) {
+                p = a.interpolate(c, h).interpolate(b, v);
+            } else {
+                p = a.interpolate(c, h).interpolate(d, v);
+            }
+        } while (a.subtract(impt).cross(p.subtract(impt)) * list.get(0).subtract(impt).cross(list.get(list.size() - 1).subtract(impt)) < 0
+                || p.subtract(impt).cross(c.subtract(impt)) * list.get(0).subtract(impt).cross(list.get(list.size() - 1).subtract(impt)) < 0);
+//      while (p.dot(hor) > c.dot(hor) || p.dot(hor) < a.dot(hor));
+//        while (a.interpolate(d, h).subtract(p).cross(b.subtract(p)) < 0 || a.interpolate(b, h).subtract(p).cross(d.subtract(p)) < 0);
+
+        subdivide(a, a.interpolate(b, h), p, a.interpolate(d, h), minLength, list, impt);
+        list.add(list.size() - 1, p);
+        subdivide(p, b.interpolate(c, h), c, d.interpolate(c, h), minLength, list, impt);
+//        //Subdivide the quadrilateral
+//        double p = .3 + .4 * Math.random(); // vertical (along A-D and B-C)
+//        double q = .3 + .4 * Math.random(); // horizontal (along A-B and D-C)
+//        // Midpoints
+//        Vec2 e = a.interpolate(d, p);
+//        Vec2 f = b.interpolate(c, p);
+//        Vec2 g = a.interpolate(b, q);
+//        Vec2 i = d.interpolate(c, q);
+//        // Central point
+//        Vec2 h = e.interpolate(f, q);
+//        // Divide the quad into subquads, but meet at H
+//        double s = .6 + .8 * Math.random();
+//        double t = .6 + .8 * Math.random();
+//        subdivide(a, g.interpolate(b, s), h, e.interpolate(d, t), minLength, list);
+//        list.add(h);
+//        subdivide(h, f.interpolate(c, s), c, i.interpolate(d, t), minLength, list);
     }
 
     private void voronoi(double[] xs, double[] ys) {
@@ -312,5 +369,9 @@ public class World extends AbstractEntity {
         for (GraphEdge ge : gel) {
             processGraphEdge(ge);
         }
+    }
+
+    static Color4d waterColor(double elevation) {
+        return new Color4d(elevation / 4, elevation / 2, 1, 1);
     }
 }

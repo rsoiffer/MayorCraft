@@ -1,5 +1,6 @@
 package worldgen;
 
+import core.Color4d;
 import core.Vec2;
 import graphics.RenderManagerComponent;
 import java.util.*;
@@ -14,6 +15,7 @@ public class Center {
     public HashSet<Center> neighbors;
     public HashSet<Edge> borders;
     public TreeSet<Corner> corners;
+    public Color4d color;
 
     Center(double x, double y) {
         pos = new Vec2(x, y);
@@ -43,19 +45,20 @@ public class Center {
         if (rmc.inView(pos)) {
             return true;
         }
-        if (pos.subtract(rmc.middle()).lengthSquared() > 10000000) {
+        if (!rmc.potentiallyInView(pos, new Vec2(World.SIZE, World.SIZE).multiply(2 / Math.sqrt(World.POINTS)))) {
             return false;
         }
         for (Corner c : corners) {
-            if (rmc.inView(c.pos)) {
-                return true;
-            }
-        }
-        for (Edge e : borders) {
-            if (e.inView(rmc)) {
+            if (rmc.nearInView(c.pos, 100)) {
                 return true;
             }
         }
         return false;
+//        for (Edge e : borders) {
+//            if (e.inView(rmc)) {
+//                return true;
+//            }
+//        }
+//        return false;
     }
 }

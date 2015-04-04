@@ -32,7 +32,7 @@ public class AnimationSystem extends AbstractSystem {
 
         //Draw segments and middle
         Graphics.drawWideLine(l.pos, middle, l.color1, size);
-        Graphics.fillEllipse(middle, new Vec2(size, size), l.color2);
+        Graphics.fillEllipse(middle, new Vec2(size, size), l.color2, 10);
         Graphics.drawWideLine(base, middle, l.color2, size);
 
     }
@@ -84,7 +84,7 @@ public class AnimationSystem extends AbstractSystem {
 
         //Turn time into a position - triangle wave
         double offset = ac.stride * (.5 - Math.abs((ac.time + .5) % 2 - 1));
-        double ahead = 2 * speed;
+        double ahead = speed;
 
         //Move feet
         ac.legL.target = pc.pos.add(left).add(direction.multiply(offset + ahead));

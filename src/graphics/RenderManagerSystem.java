@@ -2,6 +2,8 @@ package graphics;
 
 import core.AbstractSystem;
 import core.Keys;
+import core.MouseInput;
+import core.Vec2;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import static org.lwjgl.input.Keyboard.*;
@@ -18,7 +20,7 @@ public class RenderManagerSystem extends AbstractSystem {
 
         try {
             //Display Init
-            setDisplayMode(renderManagerComponent.displayWidth, renderManagerComponent.displayHeight, renderManagerComponent.startFullscreen);
+            setDisplayMode((int) rmc.displaySize.x, (int) rmc.displaySize.y, rmc.startFullscreen);
             Display.setVSyncEnabled(true);
             Display.setResizable(true);
             Display.setTitle("So how are you today?");
@@ -36,8 +38,8 @@ public class RenderManagerSystem extends AbstractSystem {
     private void calculateViewport() {
         int w = Display.getWidth();
         int h = Display.getHeight();
-        int dw = rmc.viewWidth;
-        int dh = rmc.viewHeight;
+        int dw = (int) rmc.viewSize.x;
+        int dh = (int) rmc.viewSize.y;
         int vw, vh;
         if (w * dh > h * dw) {
             vh = h;
@@ -98,31 +100,39 @@ public class RenderManagerSystem extends AbstractSystem {
     @Override
     public void update() {
         if (Keys.isDown(KEY_W)) {
-            rmc.viewY += 20;
+            rmc.viewPos = rmc.viewPos.add(new Vec2(0, 20 * rmc.viewSize.y / rmc.displaySize.y));
         }
         if (Keys.isDown(KEY_A)) {
-            rmc.viewX -= 20;
+            rmc.viewPos = rmc.viewPos.add(new Vec2(-20 * rmc.viewSize.x / rmc.displaySize.x, 0));
         }
         if (Keys.isDown(KEY_S)) {
-            rmc.viewY -= 20;
+            rmc.viewPos = rmc.viewPos.add(new Vec2(0, -20 * rmc.viewSize.y / rmc.displaySize.y));
         }
         if (Keys.isDown(KEY_D)) {
-            rmc.viewX += 20;
+            rmc.viewPos = rmc.viewPos.add(new Vec2(20 * rmc.viewSize.x / rmc.displaySize.x, 0));
         }
+        rmc.zoom -= MouseInput.wheel();
+        if (rmc.zoom > 45) {
+            rmc.zoom = 45;
+        }
+        if (rmc.zoom < -15) {
+            rmc.zoom = -15;
+        }
+        rmc.viewSize = rmc.displaySize.multiply(Math.pow(1.1, rmc.zoom));
 
         if (Keys.isPressed(Keyboard.KEY_F11)) {
-            setDisplayMode(rmc.displayWidth, rmc.displayHeight, !Display.isFullscreen());
+            setDisplayMode((int) rmc.displaySize.x, (int) rmc.displaySize.y, !Display.isFullscreen());
         }
 
         calculateViewport();
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(rmc.viewX, rmc.viewX + rmc.viewWidth, rmc.viewY, rmc.viewY + rmc.viewHeight, -1, 1);
+        glOrtho(rmc.LL().x, rmc.UR().x, rmc.LL().y, rmc.UR().y, -1, 1);
         glMatrixMode(GL_MODELVIEW);
 
         glClear(GL_COLOR_BUFFER_BIT);
-        glClearColor(1, 1, 1, 1);
+        //glClearColor(1, 1, 1, 1);
     }
 
 }

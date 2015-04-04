@@ -14,11 +14,18 @@ public class Edge {
     public ArrayList<Vec2> noisePath = new ArrayList();
 
     public boolean inView(RenderManagerComponent rmc) {
-        for (Vec2 pos : noisePath) {
-            if (rmc.potentiallyInView(pos, new Vec2(10, 10).multiply(Math.sqrt(water)))) {
-                return true;
-            }
+        if (!rmc.potentiallyInView(p0.pos, new Vec2(World.SIZE, World.SIZE).multiply(2 / Math.sqrt(World.POINTS)))) {
+            return false;
         }
-        return false;
+        if (!rmc.potentiallyInView(p1.pos, new Vec2(World.SIZE, World.SIZE).multiply(2 / Math.sqrt(World.POINTS)))) {
+            return false;
+        }
+//        for (Vec2 pos : noisePath) {
+//            if (rmc.potentiallyInView(pos, new Vec2(50, 50))) {
+//                return true;
+//            }
+//        }
+        return true;
+        //return false;
     }
 }
