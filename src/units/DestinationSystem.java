@@ -1,7 +1,6 @@
 package units;
 
 import core.AbstractSystem;
-import core.MouseInput;
 import movement.PositionComponent;
 import movement.VelocityComponent;
 
@@ -20,9 +19,9 @@ public class DestinationSystem extends AbstractSystem {
 
     @Override
     public void update() {
-        if (MouseInput.isDown(0)) {
-            dc.des = MouseInput.mouse();
-        }
+//        if (MouseInput.isDown(0)) {
+//            dc.des = MouseInput.mouse();
+//        }
         if (dc.des.subtract(pc.pos).lengthSquared() > 4) {
             vc.vel = dc.des.subtract(pc.pos).setLength(4);
         } else {

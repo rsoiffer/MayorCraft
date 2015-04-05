@@ -1,5 +1,6 @@
 package graphics;
 
+import core.Vec2;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 
 /**
@@ -159,5 +160,9 @@ public class Texture {
         if (texWidth != 0) {
             widthRatio = ((float) width) / texWidth;
         }
+    }
+
+    public Vec2 size() {
+        return new Vec2(getImageWidth() / 2, getImageHeight() / 2);
     }
 }

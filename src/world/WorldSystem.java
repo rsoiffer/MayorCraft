@@ -1,4 +1,4 @@
-package worldgen;
+package world;
 
 import core.*;
 import graphics.Graphics;
@@ -6,9 +6,9 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class WorldSystem extends AbstractSystem {
 
-    private World world;
+    private WorldComponent world;
 
-    public WorldSystem(World world) {
+    public WorldSystem(WorldComponent world) {
         this.world = world;
     }
 
@@ -65,7 +65,7 @@ public class WorldSystem extends AbstractSystem {
             if (e.inView(Main.gameManager.rmc)) {
                 if (e.water > 0 && e.isLand) {
                     //Draw river
-                    Graphics.fillEllipse(e.v0.pos, new Vec2(20 * Math.sqrt(e.water), 20 * Math.sqrt(e.water)), World.waterColor(e.v0.elevation), 10);
+                    Graphics.fillEllipse(e.v0.pos, new Vec2(World.riverWidth(e.water), World.riverWidth(e.water)), World.waterColor(e.v0.elevation), 10);
                     glBegin(GL_TRIANGLE_STRIP);
                     {
                         //Main part
@@ -73,7 +73,7 @@ public class WorldSystem extends AbstractSystem {
                         for (int i = 0; i < e.noisePath.size() - 2; i++) {
                             Vec2 start = e.noisePath.get(i);
                             Vec2 end = e.noisePath.get(i + 1);
-                            Vec2 side = end.subtract(start).setLength(20 * Math.sqrt(e.water)).normal();
+                            Vec2 side = end.subtract(start).setLength(World.riverWidth(e.water)).normal();
                             start.add(side).glVertex();
                             start.add(side.reverse()).glVertex();
                             double perc = (end.dot(dir) - e.v0.pos.dot(dir)) / dir.lengthSquared();
@@ -81,12 +81,12 @@ public class WorldSystem extends AbstractSystem {
                             //waterColor(e.v0.elevation * (1 - (double) i / e.noisePath.size()) + e.v1.elevation * ((double) i / e.noisePath.size())).glColor();
                             end.add(side).glVertex();
                             end.add(side.reverse()).glVertex();
-                            i += Math.max(0, Main.gameManager.rmc.zoom / 5);
+                            i += Math.max(0, Main.gameManager.rmc.zoom / 10);
                         }
                         //Blend with next river
                         Vec2 start = e.noisePath.get(e.noisePath.size() - 2);
                         Vec2 end = e.noisePath.get(e.noisePath.size() - 1);
-                        Vec2 side = end.subtract(start).setLength(20 * Math.sqrt(e.water)).normal();
+                        Vec2 side = end.subtract(start).setLength(World.riverWidth(e.water)).normal();
                         start.add(side).glVertex();
                         start.add(side.reverse()).glVertex();
                         World.waterColor(e.v1.elevation).glColor();
@@ -98,18 +98,18 @@ public class WorldSystem extends AbstractSystem {
                             if (e.v1.downslope == e.v0) {
                                 System.out.println(e.v1.elevation - e.v0.elevation);
                             }
-                            Vec2 side1 = end.subtract(start).setLength(20 * Math.sqrt(ed.water)).normal();
+                            Vec2 side1 = end.subtract(start).setLength(World.riverWidth(ed.water)).normal();
                             end.add(side1).glVertex();
                             end.add(side1.reverse()).glVertex();
                             Vec2 start2 = ed.v0.pos;
                             Vec2 end2 = ed.noisePath.get(1);
-                            Vec2 side2 = end2.subtract(start2).setLength(20 * Math.sqrt(ed.water)).normal();
+                            Vec2 side2 = end2.subtract(start2).setLength(World.riverWidth(ed.water)).normal();
                             start2.add(side2).glVertex();
                             start2.add(side2.reverse()).glVertex();
                         }
                     }
                     glEnd();
-                    Graphics.fillEllipse(e.v1.pos, new Vec2(20 * Math.sqrt(e.water), 20 * Math.sqrt(e.water)), World.waterColor(e.v1.elevation), 10);
+                    Graphics.fillEllipse(e.v1.pos, new Vec2(World.riverWidth(e.water), World.riverWidth(e.water)), World.waterColor(e.v1.elevation), 10);
 
                 }
             }

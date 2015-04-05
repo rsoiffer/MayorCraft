@@ -5,24 +5,26 @@ import core.Vec2;
 
 public class FrictionSystem extends AbstractSystem {
 
-    private VelocityComponent velocity;
-    private RotationComponent rotation;
+    private VelocityComponent vc;
+    private RotationComponent rc;
 
-    public FrictionSystem(VelocityComponent velocity) {
-        this(velocity, new RotationComponent());
+    public FrictionSystem(VelocityComponent vc) {
+        this(vc, null);
     }
 
-    public FrictionSystem(VelocityComponent velocity, RotationComponent rotation) {
-        this.velocity = velocity;
-        this.rotation = rotation;
+    public FrictionSystem(VelocityComponent vc, RotationComponent rc) {
+        this.vc = vc;
+        this.rc = rc;
     }
 
     @Override
     public void update() {
-        velocity.vel = velocity.vel.multiply(.99);
-        if (velocity.vel.lengthSquared() < .005) {
-            velocity.vel = new Vec2();
+        vc.vel = vc.vel.multiply(.99);
+        if (vc.vel.lengthSquared() < .005) {
+            vc.vel = new Vec2();
         }
-        rotation.aVel = rotation.aVel * .99;
+        if (rc != null) {
+            rc.aVel = rc.aVel * .99;
+        }
     }
 }

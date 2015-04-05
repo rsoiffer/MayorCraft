@@ -41,6 +41,18 @@ public abstract class Graphics {
         glEnd();
     }
 
+    public static void drawEllipse(Vec2 pos, Vec2 size, Color4d color, double detail) {
+        glDisable(GL_TEXTURE_2D);
+        color.glColor();
+        glBegin(GL_LINE_LOOP);
+        {
+            for (double angle = 0; angle < detail; angle++) {
+                glVertex2d(pos.x + size.x * Math.cos(angle / detail * Math.PI * 2), pos.y + size.y * Math.sin(angle / detail * Math.PI * 2));
+            }
+        }
+        glEnd();
+    }
+
     public static void drawLine(Vec2 start, Vec2 end) {
         drawLine(start, end, Color4d.BLACK, 2);
     }
@@ -53,6 +65,19 @@ public abstract class Graphics {
         {
             start.glVertex();
             end.glVertex();
+        }
+        glEnd();
+    }
+
+    public static void drawRegPoly(Vec2 pos, double n, double size, Color4d color) {
+        size = size / Math.cos(Math.PI / n);
+        glDisable(GL_TEXTURE_2D);
+        color.glColor();
+        glBegin(GL_LINE_LOOP);
+        {
+            for (double angle = .5; angle < n; angle++) {
+                glVertex2d(pos.x + size * Math.cos(angle / n * Math.PI * 2), pos.y + size * Math.sin(angle / n * Math.PI * 2));
+            }
         }
         glEnd();
     }
@@ -79,7 +104,6 @@ public abstract class Graphics {
             glTexCoord2d(s.getWidth(), 0);
             glVertex2d(s.getImageWidth(), s.getImageHeight());
         }
-        //glScaled(1, 1, 1);
         glEnd();
         glPopMatrix();
     }

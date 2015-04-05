@@ -2,6 +2,7 @@ package core;
 
 import graphics.RenderManagerComponent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
@@ -10,6 +11,7 @@ public abstract class MouseInput {
     private static ArrayList<Integer> down = new ArrayList();
     private static ArrayList<Integer> pressed = new ArrayList();
     private static ArrayList<Integer> released = new ArrayList();
+    private static HashMap<Integer, Integer> time = new HashMap();
     private static int wheel;
 
     public static boolean isDown(int button) {
@@ -22,6 +24,13 @@ public abstract class MouseInput {
 
     public static boolean isReleased(int button) {
         return released.contains(button);
+    }
+
+    public static int getTime(int button) {
+        if (!time.containsKey(button)) {
+            return 0;
+        }
+        return time.get(button);
     }
 
     public static Vec2 mouse() {
@@ -57,10 +66,14 @@ public abstract class MouseInput {
             if (Mouse.getEventButtonState()) {
                 down.add(button);
                 pressed.add(button);
+                time.put(button, 0);
             } else {
                 down.remove(button);
                 released.add(button);
             }
+        }
+        for (Integer i : down) {
+            time.put(i, time.get(i) + 1);
         }
     }
 }

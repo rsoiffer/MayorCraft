@@ -5,20 +5,20 @@ import core.Color4d;
 import core.Vec2;
 import graphics.Graphics;
 import movement.PositionComponent;
+import movement.PreviousPositionComponent;
 import movement.RotationComponent;
-import movement.VelocityComponent;
 
 public class AnimationSystem extends AbstractSystem {
 
     private AnimationComponent ac;
     private PositionComponent pc;
-    private VelocityComponent vc;
+    private PreviousPositionComponent ppc;
     private RotationComponent rc;
 
-    public AnimationSystem(AnimationComponent ac, PositionComponent pc, VelocityComponent vc, RotationComponent rc) {
+    public AnimationSystem(AnimationComponent ac, PositionComponent pc, PreviousPositionComponent ppc, RotationComponent rc) {
         this.ac = ac;
         this.pc = pc;
-        this.vc = vc;
+        this.ppc = ppc;
         this.rc = rc;
     }
 
@@ -40,9 +40,9 @@ public class AnimationSystem extends AbstractSystem {
     @Override
     public void update() {
         //Variables
-        double speed = vc.vel.length();
-        if (speed > 0) {
-            double target = vc.vel.direction();
+        double speed = pc.pos.subtract(ppc.pos).length();
+        if (speed > 1) {
+            double target = pc.pos.subtract(ppc.pos).direction();
             //Turn slowly
             if ((target - rc.rot + 4 * Math.PI) % (2 * Math.PI) < .1) {
                 rc.rot = target;
@@ -66,7 +66,7 @@ public class AnimationSystem extends AbstractSystem {
         double walkSpeed = Math.max(1, speed) / ac.stride;
 
         //Walk forwards
-        if (speed > 0) {
+        if (speed > 1) {
             ac.time += walkSpeed;
         } else {
             //Round
@@ -98,7 +98,7 @@ public class AnimationSystem extends AbstractSystem {
         ac.armL.pos = ac.armL.pos.interpolate(ac.armL.target, .5);
         ac.armR.pos = ac.armR.pos.interpolate(ac.armR.target, .5);
 
-        if (speed > 0) {
+        if (speed > 1) {
             //Draw feet
             drawLimb(ac.legL, direction, left, .25, 4);
             drawLimb(ac.legR, direction, right, .25, 4);

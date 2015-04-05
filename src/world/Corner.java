@@ -1,4 +1,4 @@
-package worldgen;
+package world;
 
 import core.Vec2;
 import java.util.HashSet;

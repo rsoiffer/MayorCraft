@@ -4,17 +4,17 @@ import core.AbstractSystem;
 
 public class VelocitySystem extends AbstractSystem {
 
-    private PositionComponent position;
-    private VelocityComponent velocity;
+    private PositionComponent pc;
+    private VelocityComponent vc;
 
-    public VelocitySystem(PositionComponent position, VelocityComponent velocity) {
-        this.position = position;
-        this.velocity = velocity;
+    public VelocitySystem(PositionComponent pc, VelocityComponent vc) {
+        this.pc = pc;
+        this.vc = vc;
     }
 
     @Override
     public void update() {
-        position.pos = position.pos.add(velocity.vel);
+        pc.pos = pc.pos.add(vc.vel);
     }
 
 }

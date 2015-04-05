@@ -6,7 +6,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import units.Unit;
-import worldgen.World;
+import world.World;
 
 public abstract class Main {
 
@@ -43,7 +43,24 @@ public abstract class Main {
 
         //Create entities
         new World();
-        new Unit(new Vec2());
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100));
     }
 
     public static void run() {

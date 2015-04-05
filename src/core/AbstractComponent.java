@@ -2,6 +2,6 @@ package core;
 
 public abstract class AbstractComponent {
 
-    void destroy() {
+    protected void destroy() {
     }
 }

@@ -1,28 +1,20 @@
-package worldgen;
+package world;
 
-import core.AbstractEntity;
+import core.AbstractComponent;
 import core.Color4d;
 import core.Vec2;
 import java.util.*;
 import noise.Noise;
 import voronoi.GraphEdge;
 import voronoi.Voronoi;
+import static world.World.*;
 
-public class World extends AbstractEntity {
+public class WorldComponent extends AbstractComponent {
 
-    public static final int POINTS = 10000;
-    private static final int BUCKETS = POINTS / 10;
-    public static final int SIZE = 50000;
     List<Center> centers = new ArrayList();
     List<Edge> edges = new ArrayList();
     List<Corner> corners = new ArrayList();
     ArrayList<ArrayList<Corner>> buckets = new ArrayList();
-
-    public World() {
-        init();
-        //Systems
-        add(new WorldSystem(this));
-    }
 
     private void assignElevations() {
         //Initialize elevation as 0 at the border, start flood fill
@@ -161,11 +153,12 @@ public class World extends AbstractEntity {
     }
 
     private void createNoisyLines() {
+        //Create noisy lines
         for (Edge e : edges) {
             e.noisePath.add(e.v0.pos);
             e.noisePath.add(e.v1.pos);
             Vec2 impt = e.p0.pos;
-            if (centers.indexOf(e.p1) > centers.indexOf(e.p0)) {
+            if ((centers.indexOf(e.p1) > centers.indexOf(e.p0) || e.p0.elevation == 0) && e.p1.elevation > 0) {
                 impt = e.p1.pos;
             }
             if (e.water > 0) {
@@ -175,7 +168,42 @@ public class World extends AbstractEntity {
             } else {
                 subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 12, e.noisePath, impt);
             }
-            //e.noisePath.add(e.v1.pos);
+        }
+        //Define edge bounds
+        for (Edge e : edges) {
+            e.LL = e.UR = e.v0.pos;
+            for (Vec2 v : e.noisePath) {
+                if (v.x > e.UR.x) {
+                    e.UR = e.UR.setX(v.x);
+                }
+                if (v.y > e.UR.y) {
+                    e.UR = e.UR.setY(v.y);
+                }
+                if (v.x < e.LL.x) {
+                    e.LL = e.LL.setX(v.x);
+                }
+                if (v.y < e.LL.y) {
+                    e.LL = e.LL.setY(v.y);
+                }
+            }
+        }
+        //Define polygon bounds
+        for (Center c : centers) {
+            c.LL = c.UR = c.pos;
+            for (Edge e : c.borders) {
+                if (e.UR.x > c.UR.x) {
+                    c.UR = c.UR.setX(e.UR.x);
+                }
+                if (e.UR.y > c.UR.y) {
+                    c.UR = c.UR.setY(e.UR.y);
+                }
+                if (e.LL.x < c.LL.x) {
+                    c.LL = c.LL.setX(e.LL.x);
+                }
+                if (e.LL.y < c.LL.y) {
+                    c.LL = c.LL.setY(e.LL.y);
+                }
+            }
         }
     }
 
@@ -222,6 +250,13 @@ public class World extends AbstractEntity {
         }
     }
 
+    private void createTerrain() {
+//        for (int i = 0; i < SIZE / 100000. * SIZE; i++) {
+//            new Tree(Vec2.random(SIZE));
+//            //System.out.println(i);
+//        }
+    }
+
     private Corner getCorner(double x, double y) {
         for (Corner c : buckets.get((int) ((x + SIZE) / 2 * BUCKETS / SIZE))) {
             if (Math.abs(c.pos.x - x) < .0001 && Math.abs(c.pos.y - y) < .0001) {
@@ -234,7 +269,7 @@ public class World extends AbstractEntity {
         return c;
     }
 
-    private void init() {
+    void init() {
         for (int i = 0; i <= BUCKETS; i++) {
             buckets.add(new ArrayList());
         }
@@ -253,6 +288,9 @@ public class World extends AbstractEntity {
 
         //Noise
         createNoisyLines();
+
+        //Terrain
+        createTerrain();
     }
 
     private void processGraphEdge(GraphEdge ge) {
@@ -369,9 +407,5 @@ public class World extends AbstractEntity {
         for (GraphEdge ge : gel) {
             processGraphEdge(ge);
         }
-    }
-
-    static Color4d waterColor(double elevation) {
-        return new Color4d(elevation / 4, elevation / 2, 1, 1);
     }
 }

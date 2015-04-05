@@ -1,22 +1,20 @@
 package movement;
 
-import movement.GravityComponent;
-import movement.VelocityComponent;
 import core.AbstractSystem;
 
 public class GravitySystem extends AbstractSystem {
 
-    private VelocityComponent velocity;
-    private GravityComponent gravity;
+    private VelocityComponent vc;
+    private GravityComponent gc;
 
-    public GravitySystem(VelocityComponent velocity, GravityComponent gravity) {
-        this.velocity = velocity;
-        this.gravity = gravity;
+    public GravitySystem(VelocityComponent vc, GravityComponent gc) {
+        this.vc = vc;
+        this.gc = gc;
     }
 
     @Override
     public void update() {
-        velocity.vel = velocity.vel.add(gravity.g);
+        vc.vel = vc.vel.add(gc.g);
     }
 
 }

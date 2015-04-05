@@ -12,16 +12,21 @@ public class Unit extends AbstractEntity {
         //Components
         PositionComponent pc = add(new PositionComponent(pos));
         VelocityComponent vc = add(new VelocityComponent());
+        PreviousPositionComponent ppc = add(new PreviousPositionComponent(pos));
         RotationComponent rc = add(new RotationComponent());
-        SpriteComponent sc = new SpriteComponent("cavemanHead");
-        AnimationComponent ac = new AnimationComponent(pos);
+        SpriteComponent sc = add(new SpriteComponent("PoliceHead2"));//("cavemanHead"));
+        AnimationComponent ac = add(new AnimationComponent(pos));
         DestinationComponent dc = add(new DestinationComponent());
+        SelectableComponent slc = add(new SelectableComponent(16, pc, vc, dc, 1));
 
         //Systems
-        add(new VelocitySystem(pc, vc));
         add(new DestinationSystem(pc, vc, dc));
+        add(new VelocitySystem(pc, vc));
+        add(new CollisionSystem(pc, vc, slc, dc));
+        add(new SelectableSystem(slc));
         add(new RenderSystem(pc, rc, sc));
-        add(new AnimationSystem(ac, pc, vc, rc));
+        add(new AnimationSystem(ac, pc, ppc, rc));
+        add(new PreviousPositionSystem(pc, ppc));
     }
 
 }

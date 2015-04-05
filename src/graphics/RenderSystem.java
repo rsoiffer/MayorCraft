@@ -1,25 +1,26 @@
 package graphics;
 
 import core.AbstractSystem;
+import core.Main;
 import movement.PositionComponent;
 import movement.RotationComponent;
 
 public class RenderSystem extends AbstractSystem {
 
-    private PositionComponent position;
-    private RotationComponent rotation;
-    private SpriteComponent sprite;
+    private PositionComponent pc;
+    private RotationComponent rc;
+    private SpriteComponent sc;
 
-    public RenderSystem(PositionComponent position, RotationComponent rotation, SpriteComponent sprite) {
-        this.position = position;
-        this.rotation = rotation;
-        this.sprite = sprite;
+    public RenderSystem(PositionComponent pc, SpriteComponent sc) {
+        this(pc, new RotationComponent(), sc);
     }
 
-    public RenderSystem(PositionComponent position, SpriteComponent sprite) {
-        this(position, new RotationComponent(), sprite);
+    public RenderSystem(PositionComponent pc, RotationComponent rc, SpriteComponent sc) {
+        this.pc = pc;
+        this.rc = rc;
+        this.sc = sc;
     }
-    
+
     @Override
     protected int getLayer() {
         return 1;
@@ -27,9 +28,11 @@ public class RenderSystem extends AbstractSystem {
 
     @Override
     public void update() {
-        sprite.imageIndex += sprite.imageSpeed;
-        if (sprite.visible) {
-            Graphics.drawSprite(sprite.getTexture(), position.pos, sprite.scale, rotation.rot, sprite.color);
+        sc.imageIndex += sc.imageSpeed;
+        if (sc.visible) {
+            if (Main.gameManager.rmc.nearInView(pc.pos, sc.getTexture().size().multiply(sc.scale))) {
+                Graphics.drawSprite(sc.getTexture(), pc.pos, sc.scale, rc.rot, sc.color);
+            }
         }
     }
 

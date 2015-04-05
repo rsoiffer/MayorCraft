@@ -27,14 +27,17 @@ public class RenderManagerComponent extends AbstractComponent {
         return viewPos.subtract(viewSize.multiply(.5));
     }
 
-    public boolean nearInView(Vec2 pos, double buffer) {
-        return pos.x > LL().x - buffer && pos.x < UR().x + buffer && pos.y > LL().y - buffer && pos.y < UR().y + buffer;
+    public boolean nearInView(Vec2 pos, Vec2 buffer) {
+        return pos.containedBy(LL().subtract(buffer), UR().add(buffer));
     }
 
-    public boolean potentiallyInView(Vec2 pos, Vec2 buffer) {
-        return pos.subtract(viewPos).lengthSquared() < (viewSize.x + buffer.x) * (viewSize.x + buffer.x) + (viewSize.y + buffer.y) * (viewSize.y + buffer.y);
-    }
-
+//    public boolean nearInView(Vec2 pos, double buffer) {
+//        return pos.x > LL().x - buffer && pos.x < UR().x + buffer && pos.y > LL().y - buffer && pos.y < UR().y + buffer;
+//    }
+//
+//    public boolean potentiallyInView(Vec2 pos, Vec2 buffer) {
+//        return pos.subtract(viewPos).lengthSquared() < (viewSize.x + buffer.x) * (viewSize.x + buffer.x) + (viewSize.y + buffer.y) * (viewSize.y + buffer.y);
+//    }
     public Vec2 UR() {
         return viewPos.add(viewSize.multiply(.5));
     }

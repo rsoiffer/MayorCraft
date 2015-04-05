@@ -1,4 +1,4 @@
-package worldgen;
+package world;
 
 import core.Color4d;
 import core.Vec2;
@@ -16,6 +16,8 @@ public class Center {
     public HashSet<Edge> borders;
     public TreeSet<Corner> corners;
     public Color4d color;
+    public Vec2 LL;
+    public Vec2 UR;
 
     Center(double x, double y) {
         pos = new Vec2(x, y);
@@ -42,18 +44,19 @@ public class Center {
     }
 
     public boolean inView(RenderManagerComponent rmc) {
-        if (rmc.inView(pos)) {
-            return true;
-        }
-        if (!rmc.potentiallyInView(pos, new Vec2(World.SIZE, World.SIZE).multiply(2 / Math.sqrt(World.POINTS)))) {
-            return false;
-        }
-        for (Corner c : corners) {
-            if (rmc.nearInView(c.pos, 100)) {
-                return true;
-            }
-        }
-        return false;
+        return LL.quadrant(rmc.UR()) == 1 && rmc.LL().quadrant(UR) == 1;
+//        if (rmc.inView(pos)) {
+//            return true;
+//        }
+//        if (!rmc.nearInView(pos, new Vec2(World.SIZE, World.SIZE).multiply(2 / Math.sqrt(World.POINTS)))) {
+//            return false;
+//        }
+//        return true;
+//        for (Corner c : corners) {
+//            if (rmc.nearInView(c.pos, 100)) {
+//                return true;
+//            }
+//        }
 //        for (Edge e : borders) {
 //            if (e.inView(rmc)) {
 //                return true;
