@@ -2,6 +2,7 @@ package world;
 
 import core.Vec2;
 import java.util.HashSet;
+import static world.World.WORLD_SIZE;
 
 public class Corner implements Comparable {
 
@@ -19,7 +20,7 @@ public class Corner implements Comparable {
 
     Corner(double x, double y) {
         pos = new Vec2(x, y);
-        isBorder = Math.abs(x) == World.SIZE || Math.abs(y) == World.SIZE;
+        isBorder = Math.abs(x) == WORLD_SIZE || Math.abs(y) == WORLD_SIZE;
         touches = new HashSet();
         protrudes = new HashSet();
         adjacent = new HashSet();

@@ -2,11 +2,14 @@ package world;
 
 import core.AbstractComponent;
 import core.Color4d;
+import core.Main;
 import core.Vec2;
 import java.util.*;
 import noise.Noise;
 import voronoi.GraphEdge;
 import voronoi.Voronoi;
+import static world.GridComponent.GRID_SIZE;
+import static world.GridComponent.SQUARE_SIZE;
 import static world.World.*;
 
 public class WorldComponent extends AbstractComponent {
@@ -15,6 +18,14 @@ public class WorldComponent extends AbstractComponent {
     List<Edge> edges = new ArrayList();
     List<Corner> corners = new ArrayList();
     ArrayList<ArrayList<Corner>> buckets = new ArrayList();
+
+    public WorldComponent() {
+        for (int i = 0; i <= BUCKETS; i++) {
+            buckets.add(new ArrayList());
+        }
+
+        init();
+    }
 
     private void assignElevations() {
         //Initialize elevation as 0 at the border, start flood fill
@@ -35,12 +46,9 @@ public class WorldComponent extends AbstractComponent {
                 if (c == n) {
                     n = e.v1;
                 }
-//                if (e.v0 == e.v1) {
-//                    System.out.println("bad");
-//                }
                 double newElevation = c.elevation + .000001;
                 if (e.isLand) {
-                    newElevation += 10000 * Math.random() + c.pos.subtract(n.pos).length();
+                    newElevation += c.pos.subtract(n.pos).length() + 10000 * RANDOM.nextDouble(); //Adding this randomness kills the seed - idk why
                 }
                 if (n.elevation > newElevation) {
                     n.elevation = newElevation;
@@ -92,12 +100,12 @@ public class WorldComponent extends AbstractComponent {
 
     private void assignOceanLand() {
         //Create noise with seed
-        Noise noise = new Noise(Math.random() * 1000);
+        Noise noise = new Noise(RANDOM.nextDouble() * 10000);
         for (Corner c : corners) {
             //Get random value between 0 and 1
-            double r = noise.multi(c.pos.x, c.pos.y, 8, 2. / SIZE) / 2 + .5;
+            double r = noise.multi(c.pos.x, c.pos.y, 8, 2. / WORLD_SIZE) / 2 + .5;
             //Shape is determined by both random and distance
-            if (r > c.pos.lengthSquared() / SIZE / SIZE) {
+            if (r > c.pos.lengthSquared() / WORLD_SIZE / WORLD_SIZE) {
                 c.isLand = true;
             }
         }
@@ -205,6 +213,20 @@ public class WorldComponent extends AbstractComponent {
                 }
             }
         }
+        //Calculate blocked areas
+        for (Center c : centers) {
+            if (!c.isLand) {
+                for (int i = ((int) c.LL.x + WORLD_SIZE) / SQUARE_SIZE; i < ((int) c.UR.x + WORLD_SIZE) / SQUARE_SIZE + 1; i++) {
+                    for (int j = ((int) c.LL.y + WORLD_SIZE) / SQUARE_SIZE; j < ((int) c.UR.y + WORLD_SIZE) / SQUARE_SIZE + 1; j++) {
+                        if (i < GRID_SIZE && j < GRID_SIZE) {
+                            if (!Main.gameManager.gc.get(i, j)) {
+                                Main.gameManager.gc.set(i, j, c.contains(GridComponent.pos(i, j)));
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void createPolygons() {
@@ -213,8 +235,8 @@ public class WorldComponent extends AbstractComponent {
         double[] ys = new double[POINTS];
         //Choose random points
         for (int i = 0; i < POINTS; i++) {
-            xs[i] = Math.random() * SIZE * 2 - SIZE;
-            ys[i] = Math.random() * SIZE * 2 - SIZE;
+            xs[i] = RANDOM.nextDouble() * WORLD_SIZE * 2 - WORLD_SIZE;
+            ys[i] = RANDOM.nextDouble() * WORLD_SIZE * 2 - WORLD_SIZE;
         }
         //Calculate voronoi
         voronoi(xs, ys);
@@ -238,7 +260,7 @@ public class WorldComponent extends AbstractComponent {
 
     private void createRivers() {
         for (int i = 0; i < POINTS / 10; i++) {
-            Corner c = corners.get((int) (corners.size() * Math.random()));
+            Corner c = corners.get((int) (corners.size() * RANDOM.nextDouble()));
             if (c.elevation < .3) {
                 continue;
             }
@@ -250,30 +272,19 @@ public class WorldComponent extends AbstractComponent {
         }
     }
 
-    private void createTerrain() {
-//        for (int i = 0; i < SIZE / 100000. * SIZE; i++) {
-//            new Tree(Vec2.random(SIZE));
-//            //System.out.println(i);
-//        }
-    }
-
     private Corner getCorner(double x, double y) {
-        for (Corner c : buckets.get((int) ((x + SIZE) / 2 * BUCKETS / SIZE))) {
+        for (Corner c : buckets.get((int) ((x + WORLD_SIZE) / 2 * BUCKETS / WORLD_SIZE))) {
             if (Math.abs(c.pos.x - x) < .0001 && Math.abs(c.pos.y - y) < .0001) {
                 return c;
             }
         }
         Corner c = new Corner(x, y);
         corners.add(c);
-        buckets.get((int) ((x + SIZE) / 2 * BUCKETS / SIZE)).add(c);
+        buckets.get((int) ((x + WORLD_SIZE) / 2 * BUCKETS / WORLD_SIZE)).add(c);
         return c;
     }
 
     void init() {
-        for (int i = 0; i <= BUCKETS; i++) {
-            buckets.add(new ArrayList());
-        }
-
         //Polygons
         createPolygons();
 
@@ -288,9 +299,6 @@ public class WorldComponent extends AbstractComponent {
 
         //Noise
         createNoisyLines();
-
-        //Terrain
-        createTerrain();
     }
 
     private void processGraphEdge(GraphEdge ge) {
@@ -361,9 +369,9 @@ public class WorldComponent extends AbstractComponent {
             if (count++ > 100) {
                 return;
             }
-            h = .3 + .4 * Math.random();
-            double v = 1 - .6 * Math.random() * Math.min(1, (c.dot(hor) - a.dot(hor)) / (bv + dv));
-            if (Math.random() * (bv + dv) - dv > 0) {
+            h = .3 + .4 * RANDOM.nextDouble();
+            double v = 1 - .6 * RANDOM.nextDouble() * Math.min(1, (c.dot(hor) - a.dot(hor)) / (bv + dv));
+            if (RANDOM.nextDouble() * (bv + dv) - dv > 0) {
                 p = a.interpolate(c, h).interpolate(b, v);
             } else {
                 p = a.interpolate(c, h).interpolate(d, v);
@@ -377,8 +385,8 @@ public class WorldComponent extends AbstractComponent {
         list.add(list.size() - 1, p);
         subdivide(p, b.interpolate(c, h), c, d.interpolate(c, h), minLength, list, impt);
 //        //Subdivide the quadrilateral
-//        double p = .3 + .4 * Math.random(); // vertical (along A-D and B-C)
-//        double q = .3 + .4 * Math.random(); // horizontal (along A-B and D-C)
+//        double p = .3 + .4 * random.nextDouble(); // vertical (along A-D and B-C)
+//        double q = .3 + .4 * random.nextDouble(); // horizontal (along A-B and D-C)
 //        // Midpoints
 //        Vec2 e = a.interpolate(d, p);
 //        Vec2 f = b.interpolate(c, p);
@@ -387,8 +395,8 @@ public class WorldComponent extends AbstractComponent {
 //        // Central point
 //        Vec2 h = e.interpolate(f, q);
 //        // Divide the quad into subquads, but meet at H
-//        double s = .6 + .8 * Math.random();
-//        double t = .6 + .8 * Math.random();
+//        double s = .6 + .8 * random.nextDouble();
+//        double t = .6 + .8 * random.nextDouble();
 //        subdivide(a, g.interpolate(b, s), h, e.interpolate(d, t), minLength, list);
 //        list.add(h);
 //        subdivide(h, f.interpolate(c, s), c, i.interpolate(d, t), minLength, list);
@@ -399,7 +407,7 @@ public class WorldComponent extends AbstractComponent {
         edges.clear();
         corners.clear();
         Voronoi v = new Voronoi(.1);
-        List<GraphEdge> gel = v.generateVoronoi(xs, ys, -SIZE, SIZE, -SIZE, SIZE);
+        List<GraphEdge> gel = v.generateVoronoi(xs, ys, -WORLD_SIZE, WORLD_SIZE, -WORLD_SIZE, WORLD_SIZE);
         //Create all centers
         for (int i = 0; i < POINTS; i++) {
             centers.add(new Center(xs[i], ys[i]));

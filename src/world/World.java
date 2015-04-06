@@ -2,27 +2,29 @@ package world;
 
 import core.AbstractEntity;
 import core.Color4d;
+import java.util.Random;
 
 public class World extends AbstractEntity {
 
     static final int POINTS = 10000;
     static final int BUCKETS = POINTS / 10;
-    static final int SIZE = 50000;
-    static final int GRID_SIZE = 50;
+    static final int WORLD_SIZE = 5000;
+    public static Random RANDOM;
+    public static int SEED = (int) (Math.random() * 10000);
 
     public World() {
+        RANDOM = new Random(SEED);
         //Components
         WorldComponent wc = add(new WorldComponent());
-        wc.init();
-//        TerrainComponent tc = add(new TerrainComponent());
+        TerrainComponent tc = add(new TerrainComponent());
 
         //Systems
         add(new WorldSystem(wc));
-//        add(new TerrainSystem(tc));
+        add(new TerrainSystem(tc));
     }
 
     static double riverWidth(double water) {
-        return SIZE / 1500. * Math.sqrt(water);
+        return WORLD_SIZE / 1500. * Math.sqrt(water);
     }
 
     static Color4d waterColor(double elevation) {

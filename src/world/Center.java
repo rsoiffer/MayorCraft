@@ -43,25 +43,34 @@ public class Center {
         return r.multiply(1. / corners.size());
     }
 
+    public boolean contains(Vec2 v) {
+        if (!v.containedBy(LL, UR)) {
+            return false;
+        }
+//        for (Edge e : borders) {
+//            if (e.v1.pos.subtract(e.v0.pos).cross(pos.subtract(e.v0.pos)) * e.v1.pos.subtract(e.v0.pos).cross(this.pos.subtract(e.v0.pos)) < 0) {
+//                return false;
+//            }
+//        }
+        for (Edge e : borders) {
+            double dir = e.v1.pos.subtract(e.v0.pos).cross(pos.subtract(e.v0.pos)); //We only need the +-
+            Vec2 toCenter = v.subtract(pos);
+            //If you're in the correct big triangle
+            if (toCenter.cross(e.v0.pos.subtract(pos)) * dir < 0 && toCenter.cross(e.v1.pos.subtract(pos)) * dir > 0) {
+                for (int i = 0; i < e.noisePath.size() - 1; i++) {
+                    Vec2 v0 = e.noisePath.get(i);
+                    Vec2 v1 = e.noisePath.get(i + 1);
+                    //If you're in the correct small triangle
+                    if (toCenter.cross(v0.subtract(pos)) * dir < 0 && toCenter.cross(v1.subtract(pos)) * dir > 0) {
+                        return v1.subtract(v0).cross(v.subtract(v0)) * dir > 0;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     public boolean inView(RenderManagerComponent rmc) {
         return LL.quadrant(rmc.UR()) == 1 && rmc.LL().quadrant(UR) == 1;
-//        if (rmc.inView(pos)) {
-//            return true;
-//        }
-//        if (!rmc.nearInView(pos, new Vec2(World.SIZE, World.SIZE).multiply(2 / Math.sqrt(World.POINTS)))) {
-//            return false;
-//        }
-//        return true;
-//        for (Corner c : corners) {
-//            if (rmc.nearInView(c.pos, 100)) {
-//                return true;
-//            }
-//        }
-//        for (Edge e : borders) {
-//            if (e.inView(rmc)) {
-//                return true;
-//            }
-//        }
-//        return false;
     }
 }
