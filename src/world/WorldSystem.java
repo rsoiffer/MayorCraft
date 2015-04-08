@@ -6,22 +6,22 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class WorldSystem extends AbstractSystem {
 
-    private WorldComponent world;
+    private WorldComponent wc;
     private static final int DETAIL = 1;
     private int skip;
 
-    public WorldSystem(WorldComponent world) {
-        this.world = world;
+    public WorldSystem(WorldComponent wc) {
+        this.wc = wc;
     }
 
     private void drawBorders() {
         Color4d.BLACK.glColor();
         glLineWidth(1);
-        for (Edge e : world.edges) {
+        for (Edge e : wc.edges) {
             if ((e.water == 0 || !e.isLand) && (e.p0.isLand || e.p1.isLand)) {
                 if (e.inView(Main.gameManager.rmc)) {
                     glBegin(GL_LINE_STRIP);
-                    for (int i = 0; i < e.noisePath.size(); i+=skip) {
+                    for (int i = 0; i < e.noisePath.size(); i += skip) {
                         e.noisePath.get(i).glVertex();
                     }
                     if (Main.gameManager.rmc.zoom >= DETAIL) {
@@ -34,7 +34,7 @@ public class WorldSystem extends AbstractSystem {
     }
 
     private void drawLand() {
-        for (Center c : world.centers) {
+        for (Center c : wc.centers) {
             if (c.inView(Main.gameManager.rmc)) {
                 if (c.isLand) {
                     c.color.glColor();
@@ -44,11 +44,12 @@ public class WorldSystem extends AbstractSystem {
                     for (Corner co : c.corners) {
                         Edge e = coPrev.edgeTo(co);
                         if (e.v0 == coPrev) {
-                            for (int i = 0; i < e.noisePath.size() - 1; i+=skip) {
+                            for (int i = 0; i < e.noisePath.size() - 1; i += skip) {
                                 e.noisePath.get(i).glVertex();
                             }
                         } else {
-                            for (int i = e.noisePath.size() - 1; i > 0; i-=skip) {
+                            coPrev.pos.glVertex();
+                            for (int i = ((e.noisePath.size() - 1) / skip) * skip; i > 0; i -= skip) {
                                 e.noisePath.get(i).glVertex();
                             }
                         }
@@ -71,7 +72,7 @@ public class WorldSystem extends AbstractSystem {
     }
 
     private void drawRivers() {
-        for (Edge e : world.edges) {
+        for (Edge e : wc.edges) {
             if (e.water > 0 && e.isLand) {
                 if (e.inView(Main.gameManager.rmc)) {
                     //Draw river
@@ -131,7 +132,7 @@ public class WorldSystem extends AbstractSystem {
     }
 
     private void drawWater() {
-        for (Center c : world.centers) {
+        for (Center c : wc.centers) {
             if (!c.isLand) {
                 if (c.elevation > 0) {
                     if (c.inView(Main.gameManager.rmc)) {
@@ -139,7 +140,7 @@ public class WorldSystem extends AbstractSystem {
                         for (Edge e : c.borders) {
                             glBegin(GL_TRIANGLE_FAN);
                             c.pos.glVertex();
-                            for (int i = 0; i < e.noisePath.size(); i+=skip) {
+                            for (int i = 0; i < e.noisePath.size(); i += skip) {
                                 e.noisePath.get(i).glVertex();
                             }
                             if (Main.gameManager.rmc.zoom >= DETAIL) {

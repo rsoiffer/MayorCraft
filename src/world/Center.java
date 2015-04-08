@@ -12,27 +12,27 @@ public class Center {
     public boolean isOnOcean;
     public boolean isBorder;
     public double elevation;
+    public Color4d color;
     public HashSet<Center> neighbors;
     public HashSet<Edge> borders;
     public TreeSet<Corner> corners;
-    public Color4d color;
     public Vec2 LL;
     public Vec2 UR;
+    public ArrayList<GridPoint> gridPoints;
 
     Center(double x, double y) {
         pos = new Vec2(x, y);
         neighbors = new HashSet();
         borders = new HashSet();
         corners = new TreeSet(new Comparator() {
-
             @Override
             public int compare(Object t, Object t1) {
                 Corner c1 = (Corner) t;
                 Corner c2 = (Corner) t1;
                 return (int) Math.signum(c1.pos.subtract(pos).direction() - c2.pos.subtract(pos).direction());
             }
-
         });
+        gridPoints = new ArrayList();
     }
 
     Vec2 average() {
@@ -53,7 +53,7 @@ public class Center {
 //            }
 //        }
         for (Edge e : borders) {
-            double dir = e.v1.pos.subtract(e.v0.pos).cross(pos.subtract(e.v0.pos)); //We only need the +-
+            double dir = Math.signum(e.v1.pos.subtract(e.v0.pos).cross(pos.subtract(e.v0.pos))); //We only need the +-
             Vec2 toCenter = v.subtract(pos);
             //If you're in the correct big triangle
             if (toCenter.cross(e.v0.pos.subtract(pos)) * dir < 0 && toCenter.cross(e.v1.pos.subtract(pos)) * dir > 0) {

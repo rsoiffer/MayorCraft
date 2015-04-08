@@ -6,29 +6,36 @@ import static world.World.WORLD_SIZE;
 
 public class GridComponent extends AbstractComponent {
 
-    private boolean[][] grid;
+    private GridPoint[][] grid;
     public boolean changed;
     public static final int SQUARE_SIZE = 50;
     public static int GRID_SIZE;
 
     public GridComponent() {
         GRID_SIZE = 2 * WORLD_SIZE / SQUARE_SIZE;
-        grid = new boolean[GRID_SIZE][GRID_SIZE];
+        grid = new GridPoint[GRID_SIZE][GRID_SIZE];
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                grid[i][j] = new GridPoint(i, j);
+            }
+        }
         changed = false;
     }
 
-    public boolean get(GridPoint gp) {
-        return grid[gp.x][gp.y];
-    }
-
-    public boolean get(int x, int y) {
+    public GridPoint get(int x, int y) {
         return grid[x][y];
     }
 
-    public boolean open(GridPoint g1, GridPoint g2) {
+    public GridPoint get(Vec2 v) {
+        return grid[((int) v.x + WORLD_SIZE) / SQUARE_SIZE][((int) v.y + WORLD_SIZE) / SQUARE_SIZE];
+    }
+
+    public boolean open(Vec2 v1, Vec2 v2) {
+        GridPoint g1 = get(v1);
+        GridPoint g2 = get(v2);
         for (int i = g1.x; i <= g2.x; i++) {
             for (int j = g1.y; j <= g2.y; j++) {
-                if (grid[i][j]) {
+                if (grid[i][j].blocked) {
                     return false;
                 }
             }
@@ -38,19 +45,5 @@ public class GridComponent extends AbstractComponent {
 
     public static Vec2 pos(int i, int j) {
         return new Vec2(-WORLD_SIZE + SQUARE_SIZE / 2 + SQUARE_SIZE * i, -WORLD_SIZE + SQUARE_SIZE / 2 + SQUARE_SIZE * j);
-    }
-
-    public void set(GridPoint gp, boolean val) {
-        if (val != get(gp)) {
-            changed = true;
-        }
-        grid[gp.x][gp.y] = val;
-    }
-
-    public void set(int x, int y, boolean val) {
-        if (val != get(x, y)) {
-            changed = true;
-        }
-        grid[x][y] = val;
     }
 }

@@ -6,7 +6,6 @@ import core.Vec2;
 import movement.PositionComponent;
 import movement.PreviousPositionComponent;
 import movement.VelocityComponent;
-import world.GridPoint;
 
 public class CollisionSystem extends AbstractSystem {
 
@@ -25,7 +24,7 @@ public class CollisionSystem extends AbstractSystem {
     }
 
     private boolean open(Vec2 pos) {
-        return Main.gameManager.gc.open(new GridPoint(pos.subtract(new Vec2(sc.size, sc.size))), new GridPoint(pos.add(new Vec2(sc.size, sc.size))));
+        return Main.gameManager.gc.open(pos.subtract(new Vec2(sc.size, sc.size)), pos.add(new Vec2(sc.size, sc.size)));
     }
 
     @Override

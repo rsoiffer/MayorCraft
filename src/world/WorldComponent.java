@@ -165,16 +165,16 @@ public class WorldComponent extends AbstractComponent {
         for (Edge e : edges) {
             e.noisePath.add(e.v0.pos);
             e.noisePath.add(e.v1.pos);
-            Vec2 impt = e.p0.pos;
-            if ((centers.indexOf(e.p1) > centers.indexOf(e.p0) || e.p0.elevation == 0) && e.p1.elevation > 0) {
-                impt = e.p1.pos;
-            }
+//            Vec2 impt = e.p0.pos;
+//            if ((centers.indexOf(e.p1) > centers.indexOf(e.p0) || e.p0.elevation == 0) && e.p1.elevation > 0) {
+//                impt = e.p1.pos;
+//            }
             if (e.water > 0) {
-                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 20/* Math.sqrt(e.water)*/, e.noisePath, impt);
+                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 20/* Math.sqrt(e.water)*/, e);
             } else if (e.p0.isLand != e.p1.isLand) {
-                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 12, e.noisePath, impt);
+                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 12, e);
             } else {
-                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 12, e.noisePath, impt);
+                subdivide(e.v0.pos, e.p0.pos, e.v1.pos, e.p1.pos, 12, e);
             }
         }
         //Define edge bounds
@@ -219,8 +219,11 @@ public class WorldComponent extends AbstractComponent {
                 for (int i = ((int) c.LL.x + WORLD_SIZE) / SQUARE_SIZE; i < ((int) c.UR.x + WORLD_SIZE) / SQUARE_SIZE + 1; i++) {
                     for (int j = ((int) c.LL.y + WORLD_SIZE) / SQUARE_SIZE; j < ((int) c.UR.y + WORLD_SIZE) / SQUARE_SIZE + 1; j++) {
                         if (i < GRID_SIZE && j < GRID_SIZE) {
-                            if (!Main.gameManager.gc.get(i, j)) {
-                                Main.gameManager.gc.set(i, j, c.contains(GridComponent.pos(i, j)));
+                            GridPoint gp = Main.gameManager.gc.get(i, j);
+                            if (c.contains(gp.toVec2())) {
+                                gp.blocked = true;
+                                gp.c = c;
+                                c.gridPoints.add(gp);
                             }
                         }
                     }
@@ -340,7 +343,7 @@ public class WorldComponent extends AbstractComponent {
         cor2.touches.add(cen2);
     }
 
-    private void subdivide(Vec2 a, Vec2 b, Vec2 c, Vec2 d, double minLength, ArrayList<Vec2> list, Vec2 impt) {
+    private void subdivide(Vec2 a, Vec2 b, Vec2 c, Vec2 d, double minLength, Edge e) {
         if (a.subtract(c).lengthSquared() < minLength * minLength) {// || b.subtract(d).lengthSquared() < minLength * minLength) {
             return;
         }
@@ -376,14 +379,16 @@ public class WorldComponent extends AbstractComponent {
             } else {
                 p = a.interpolate(c, h).interpolate(d, v);
             }
-        } while (a.subtract(impt).cross(p.subtract(impt)) * list.get(0).subtract(impt).cross(list.get(list.size() - 1).subtract(impt)) < 0
-                || p.subtract(impt).cross(c.subtract(impt)) * list.get(0).subtract(impt).cross(list.get(list.size() - 1).subtract(impt)) < 0);
+        } while (a.subtract(e.p0.pos).cross(p.subtract(e.p0.pos)) * e.noisePath.get(0).subtract(e.p0.pos).cross(e.noisePath.get(e.noisePath.size() - 1).subtract(e.p0.pos)) < 0
+                || p.subtract(e.p0.pos).cross(c.subtract(e.p0.pos)) * e.noisePath.get(0).subtract(e.p0.pos).cross(e.noisePath.get(e.noisePath.size() - 1).subtract(e.p0.pos)) < 0
+                || a.subtract(e.p1.pos).cross(p.subtract(e.p1.pos)) * e.noisePath.get(0).subtract(e.p1.pos).cross(e.noisePath.get(e.noisePath.size() - 1).subtract(e.p1.pos)) < 0
+                || p.subtract(e.p1.pos).cross(c.subtract(e.p1.pos)) * e.noisePath.get(0).subtract(e.p1.pos).cross(e.noisePath.get(e.noisePath.size() - 1).subtract(e.p1.pos)) < 0);
 //      while (p.dot(hor) > c.dot(hor) || p.dot(hor) < a.dot(hor));
 //        while (a.interpolate(d, h).subtract(p).cross(b.subtract(p)) < 0 || a.interpolate(b, h).subtract(p).cross(d.subtract(p)) < 0);
 
-        subdivide(a, a.interpolate(b, h), p, a.interpolate(d, h), minLength, list, impt);
-        list.add(list.size() - 1, p);
-        subdivide(p, b.interpolate(c, h), c, d.interpolate(c, h), minLength, list, impt);
+        subdivide(a, a.interpolate(b, h), p, a.interpolate(d, h), minLength, e);
+        e.noisePath.add(e.noisePath.size() - 1, p);
+        subdivide(p, b.interpolate(c, h), c, d.interpolate(c, h), minLength, e);
 //        //Subdivide the quadrilateral
 //        double p = .3 + .4 * random.nextDouble(); // vertical (along A-D and B-C)
 //        double q = .3 + .4 * random.nextDouble(); // horizontal (along A-B and D-C)

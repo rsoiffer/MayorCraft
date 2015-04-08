@@ -24,9 +24,10 @@ public class GridSystem extends AbstractSystem {
         if (SHOW_COLLISION_BOXES) {
             for (int i = 0; i < GRID_SIZE; i++) {
                 for (int j = 0; j < GRID_SIZE; j++) {
-                    if (gc.get(i, j)) {
+                    if (gc.get(i, j).blocked) {
                         if (Main.gameManager.rmc.inView(GridComponent.pos(i, j))) {
-                            Graphics.drawRegPoly(GridComponent.pos(i, j), 4, SQUARE_SIZE / 2, Color4d.RED);
+                            Graphics.fillRect(GridComponent.pos(i, j).subtract(new Vec2(SQUARE_SIZE, SQUARE_SIZE).multiply(.5)), new Vec2(SQUARE_SIZE, SQUARE_SIZE), Color4d.RED.setA(.5));
+                            //Graphics.drawRegPoly(GridComponent.pos(i, j), 4, SQUARE_SIZE / 2, Color4d.RED);
                         }
                     }
                 }
