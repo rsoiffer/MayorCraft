@@ -1,11 +1,13 @@
 package core;
 
+import buildings.Building;
 import java.util.ArrayList;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import units.Unit;
+import world.Terrain;
 import world.World;
 
 public abstract class Main {
@@ -43,24 +45,24 @@ public abstract class Main {
 
         //Create entities
         new World();
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
-        new Unit(Vec2.random(100));
+        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+        new Unit(Vec2.random(100), Terrain.TREE, new Building());
     }
 
     public static void run() {

@@ -9,7 +9,7 @@ public class AnimationComponent extends AbstractComponent {
     public int armPose;
     //public double d = 36;
     public double time;
-    public double stride = 50;
+    public double stride = 30;
     public double width = 8;
     public Limb legL, legR, armL, armR;
 
