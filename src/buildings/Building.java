@@ -58,8 +58,8 @@ import movement.PositionComponent;
 public class Building extends AbstractEntity{
     //components
     PositionComponent pc = add(new PositionComponent()); 
-    /**ValueComponent*/ FooSystem vc = add(new FooSystem());
-    /**UnitCreationComponent*/FooSystem uc = add(new FooSystem());
+     ValueComponent vc = add(new ValueComponent());
+    /**UnitCreationComponent*/UnitCreationComponent uc = add(new UnitCreationComponent());
     /**HousingComponent*/ FooSystem hc = add(new FooSystem());
     /**TypeComponent*/ FooSystem tc = add(new FooSystem());
     /**UpkeepComponent*/ FooSystem ic = add(new FooSystem());

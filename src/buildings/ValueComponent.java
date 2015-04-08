@@ -6,13 +6,19 @@
 
 package buildings;
 
+import core.AbstractComponent;
+
 /**
  *
  * @author CGoodman16
  */
-public class ValueComponent {
+public class ValueComponent extends AbstractComponent{
     double val;//the amount of money earned by the building
     double improve;//The chance for a buliding's value to grow by 10%. From 0 to 1
+    public ValueComponent(){
+        val=100;
+        improve=0.1;
+    }
     public ValueComponent(double v, double i){
         val=v;
         improve=i;

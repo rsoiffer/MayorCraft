@@ -1,14 +1,18 @@
 package units;
 
+import buildings.Building;
+import core.AbstractComponent;
 import core.AbstractEntity;
 import core.Vec2;
 import graphics.RenderSystem;
 import graphics.SpriteComponent;
+import java.util.ArrayList;
 import movement.*;
+import world.Terrain;
 
 public class Unit extends AbstractEntity {
 
-    public Unit(Vec2 pos) {
+    public Unit(Vec2 pos, Terrain t, Building build) {
         //Components
         PositionComponent pc = add(new PositionComponent(pos));
         VelocityComponent vc = add(new VelocityComponent());
@@ -18,6 +22,7 @@ public class Unit extends AbstractEntity {
         AnimationComponent ac = add(new AnimationComponent(pos));
         DestinationComponent dc = add(new DestinationComponent());
         SelectableComponent slc = add(new SelectableComponent(16, pc, dc));
+        ResourceComponent rsc = add(new ResourceComponent(t, build));
 
         //Systems
         add(new DestinationSystem(pc, vc, dc));
@@ -28,5 +33,6 @@ public class Unit extends AbstractEntity {
         add(new AnimationSystem(ac, pc, ppc, rc));
         add(new PreviousPositionSystem(pc, ppc));
     }
+
 
 }
