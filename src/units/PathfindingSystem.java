@@ -2,19 +2,35 @@ package units;
 
 import core.AbstractSystem;
 import core.Main;
+import core.Vec2;
 import static java.lang.Double.POSITIVE_INFINITY;
-import static java.lang.Math.floor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 import static world.GridComponent.GRID_SIZE;
+import static world.GridComponent.SQUARE_SIZE;
 import world.GridPoint;
 
 public class PathfindingSystem extends AbstractSystem {
 
+    private SelectableComponent sc;
+
     @Override
     public void update() {
+    }
+
+    private class Point implements Comparable {
+
+        GridPoint point;
+        Point parent;
+        double distance;
+        double priority;
+        
+        @Override
+        public int compareTo(Object other) {
+            return (int)Math.signum(priority - ((Point)other).priority);
+        }
     }
 
     public ArrayList<GridPoint> findPath(GridPoint start, GridPoint goal) {
@@ -44,7 +60,7 @@ public class PathfindingSystem extends AbstractSystem {
                     }
                     if (distances.get(gp) + gp.distanceTo(n) < distances.get(n)) {
                         parents.put(n, gp);
-                        distances.put(n, distances.get(gp) + gp.distanceTo(n);
+                        distances.put(n, distances.get(gp) + gp.distanceTo(n));
                         if (open.contains(n)) {
                             open.remove(n);
                         }
@@ -62,7 +78,7 @@ public class PathfindingSystem extends AbstractSystem {
             for (int j = gp.y - 1; j <= gp.y + 1; j++) {
                 if (i != gp.x || j != gp.y) {
                     if (i >= 0 && i < GRID_SIZE && j >= 0 && j < GRID_SIZE) {
-                        if (visible(gp, Main.gameManager.gc.get(i, j))   {
+                        if (visible(gp, Main.gameManager.gc.get(i, j))) {
                             r.add(Main.gameManager.gc.get(i, j));
                         }
                     }
@@ -73,71 +89,96 @@ public class PathfindingSystem extends AbstractSystem {
     }
 
     private boolean visible(GridPoint gp1, GridPoint gp2) {
-        double x0 = gp1.toVec2().x;
-        double y0 = gp1.toVec2().y;
-        double x1 = gp2.toVec2().x;
-        double y1 = gp2.toVec2().y;
+        Vec2 width = gp2.toVec2().subtract(gp1.toVec2()).setLength(sc.size).normal();
+        return visibleVec(gp1.toVec2().add(width), gp2.toVec2().add(width)) && visibleVec(gp1.toVec2().subtract(width), gp2.toVec2().subtract(width));
+    }
 
+    private boolean visibleVec(Vec2 v0, Vec2 v1) {
+        double x0 = v0.x / SQUARE_SIZE;
+        double y0 = v0.y / SQUARE_SIZE;
+        double x1 = v1.x / SQUARE_SIZE;
+        double y1 = v1.y / SQUARE_SIZE;
         double dx = Math.abs(x1 - x0);
         double dy = Math.abs(y1 - y0);
 
         int x = (int) Math.floor(x0);
         int y = (int) Math.floor(y0);
 
-        double dt_dx = 1.0 / dx;
-        double dt_dy = 1.0 / dy;
-
-        double t = 0;
-
         int n = 1;
         int x_inc, y_inc;
-        double t_next_vertical, t_next_horizontal;
+        double error;
 
         if (dx == 0) {
             x_inc = 0;
-            t_next_horizontal = dt_dx; // infinity
+            error = Double.POSITIVE_INFINITY;
         } else if (x1 > x0) {
             x_inc = 1;
-            n += int
-            (floor(x1)) - x;
-            t_next_horizontal = (floor(x0) + 1 - x0) * dt_dx;
+            n += Math.floor(x1) - x;
+            error = (Math.floor(x0) + 1 - x0) * dy;
         } else {
             x_inc = -1;
-            n += x - int
-            (floor(x1)
-            );
-t_next_horizontal = (x0 - floor(x0)) * dt_dx;
+            n += x - Math.floor(x1);
+            error = (x0 - Math.floor(x0)) * dy;
         }
 
         if (dy == 0) {
             y_inc = 0;
-            t_next_vertical = dt_dy; // infinity
+            error = Double.NEGATIVE_INFINITY;
         } else if (y1 > y0) {
             y_inc = 1;
-            n += int
-            (floor(y1)) - y;
-            t_next_vertical = (floor(y0) + 1 - y0) * dt_dy;
+            n += Math.floor(y1) - y;
+            error -= (Math.floor(y0) + 1 - y0) * dx;
         } else {
             y_inc = -1;
-            n += y - int
-            (floor(y1)
-            );
-t_next_vertical = (y0 - floor(y0)) * dt_dy;
+            n += y - Math.floor(y1);
+            error -= (y0 - Math.floor(y0)) * dx;
         }
 
         for (; n > 0; --n) {
-            visit(x, y);
+            if (Main.gameManager.gc.get(x, y).blocked) {
+                return false;
+            }
 
-            if (t_next_vertical < t_next_horizontal) {
+            if (error > 0) {
                 y += y_inc;
-                t = t_next_vertical;
-                t_next_vertical += dt_dy;
+                error -= dx;
             } else {
                 x += x_inc;
-                t = t_next_horizontal;
-                t_next_horizontal += dt_dx;
+                error += dy;
             }
         }
+        return true;
     }
 
+    private boolean visibleInt(GridPoint gp1, GridPoint gp2) {
+        int x0 = gp1.x;
+        int y0 = gp1.y;
+        int x1 = gp2.x;
+        int y1 = gp2.y;
+        int dx = Math.abs(x1 - x0);
+        int dy = Math.abs(y1 - y0);
+        int x = x0;
+        int y = y0;
+        int n = 1 + dx + dy;
+        int x_inc = (x1 > x0) ? 1 : -1;
+        int y_inc = (y1 > y0) ? 1 : -1;
+        int error = dx - dy;
+        dx *= 2;
+        dy *= 2;
+
+        for (; n > 0; --n) {
+            if (Main.gameManager.gc.get(x, y).blocked) {
+                return false;
+            }
+
+            if (error > 0) {
+                x += x_inc;
+                error -= dy;
+            } else {
+                y += y_inc;
+                error += dx;
+            }
+        }
+        return true;
+    }
 }
