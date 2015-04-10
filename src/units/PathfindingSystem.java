@@ -20,47 +20,58 @@ public class PathfindingSystem extends AbstractSystem {
     public void update() {
     }
 
-    private class Point implements Comparable {
+    private class PathPoint implements Comparable {
 
         GridPoint point;
-        Point parent;
+        PathPoint parent;
         double distance;
         double priority;
-        
+
+        PathPoint(GridPoint point) {
+            this.point = point;
+        }
+
         @Override
         public int compareTo(Object other) {
-            return (int)Math.signum(priority - ((Point)other).priority);
+            return (int) Math.signum(priority - ((PathPoint) other).priority);
+        }
+        
+        @Override
+        public boolean equals(Object other) {
+            return ((PathPoint) other).point == point;
         }
     }
 
     public ArrayList<GridPoint> findPath(GridPoint start, GridPoint goal) {
-        PriorityQueue<GridPoint> open = new PriorityQueue();
+        PriorityQueue<PathPoint> open = new PriorityQueue();
         HashSet<GridPoint> closed = new HashSet();
-        HashMap<GridPoint, GridPoint> parents = new HashMap();
-        HashMap<GridPoint, Double> distances = new HashMap();
-        parents.put(start, start);
-        distances.put(start, 0.);
-        open.add(start, 0.);
+//        HashMap<GridPoint, GridPoint> parents = new HashMap();
+//        HashMap<GridPoint, Double> distances = new HashMap();
+        PathPoint startPoint = new PathPoint(start);
+        startPoint.distance = 0;
+        startPoint.priority = 0;
+        open.add(startPoint);
         while (!open.isEmpty()) {
-            GridPoint gp = open.poll();
-            if (gp == goal) {
+            PathPoint p = open.poll();
+            if (p.point == goal) {
                 ArrayList<GridPoint> r = new ArrayList();
-                while (parents.get(gp) != gp) {
-                    r.add(gp);
-                    gp = parents.get(gp);
+                while (p.parent != p) {
+                    r.add(p.point);
+                    p = p.parent;
                 }
                 return r;
             }
-            closed.add(gp);
-            for (GridPoint n : neighbors(gp)) {
+            closed.add(p.point);
+            for (GridPoint n : neighbors(p.point)) {
                 if (!closed.contains(n)) {
+                    PathPoint np = open.
                     if (!open.contains(n)) {
                         distances.put(n, POSITIVE_INFINITY);
                         parents.put(n, null);
                     }
-                    if (distances.get(gp) + gp.distanceTo(n) < distances.get(n)) {
-                        parents.put(n, gp);
-                        distances.put(n, distances.get(gp) + gp.distanceTo(n));
+                    if (distances.get(p) + p.distanceTo(n) < distances.get(n)) {
+                        parents.put(n, p);
+                        distances.put(n, distances.get(p) + p.distanceTo(n));
                         if (open.contains(n)) {
                             open.remove(n);
                         }
