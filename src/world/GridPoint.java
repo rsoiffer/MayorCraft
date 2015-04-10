@@ -16,6 +16,10 @@ public class GridPoint {
         this.y = y;
     }
 
+    public double distanceTo(GridPoint other) {
+        return new Vec2(x - other.x, y - other.y).length();
+    }
+
     public Vec2 toVec2() {
         return GridComponent.pos(x, y);
     }
