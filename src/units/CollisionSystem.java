@@ -23,8 +23,9 @@ public class CollisionSystem extends AbstractSystem {
         this.dc = dc;
     }
 
-    private boolean open(Vec2 pos) {
-        return Main.gameManager.gc.open(pos.subtract(new Vec2(sc.size, sc.size)), pos.add(new Vec2(sc.size, sc.size)));
+    @Override
+    protected boolean pauseable() {
+        return true;
     }
 
     @Override
@@ -34,12 +35,19 @@ public class CollisionSystem extends AbstractSystem {
             SelectableComponent other = u.getComponent(SelectableComponent.class);
             if (other != sc) {
                 Vec2 diff = other.pc.pos.subtract(pc.pos);
-                if (diff.lengthSquared() < (sc.size + other.size) * (sc.size + other.size)) {
+                if (diff.lengthSquared() < 3 * sc.size * sc.size) {//(sc.size + other.size) * (sc.size + other.size)) {
                     Vec2 diffN = diff.normalize();
                     if (vc.vel.dot(diffN) >= 0) {
-                        Vec2 change = diff.subtract(diffN.multiply(other.size + sc.size)).multiply(.5);
+                        Vec2 change = diff.subtract(diffN.multiply(other.size + sc.size)).multiply(.05);
                         pc.pos = pc.pos.add(change);
                         other.pc.pos = other.pc.pos.subtract(change);
+//                        if (sc.id > other.id) {
+//                            pc.pos = pc.pos.add(change.multiply(.6));
+//                            other.pc.pos = other.pc.pos.subtract(change.multiply(.4));
+//                        } else {
+//                            pc.pos = pc.pos.add(change.multiply(.4));
+//                            other.pc.pos = other.pc.pos.subtract(change.multiply(.6));
+//                        }
                         vc.vel = vc.vel.subtract(diffN.multiply(vc.vel.dot(diffN)));
 //                    vc.vel = vc.vel.add(change);
 //                    if (s.vc != null) {
@@ -52,19 +60,43 @@ public class CollisionSystem extends AbstractSystem {
             }
         }
         //Collide with walls
-        if (!open(pc.pos)) {
-            pc.pos = pc.pos.subtract(vc.vel);
-            if (!open(pc.pos)) {
-                pc.pos = ppc.pos;
+        if (!sc.open(pc.pos)) {
+            Vec2 change = pc.pos.subtract(ppc.pos);
+            pc.pos = ppc.pos;
+            for (int i = 0; i < 10; i++) {
+                if (sc.open(pc.pos.add(new Vec2(change.x * .1, 0)))) {
+                    pc.pos = pc.pos.add(new Vec2(change.x * .1, 0));
+                } else {
+                    break;
+                }
             }
-            int count = 0;
-            while (open(pc.pos.add(vc.vel.multiply(.1))) && count++ < 10) {
-                pc.pos = pc.pos.add(vc.vel.multiply(.1));
+            for (int i = 0; i < 10; i++) {
+                if (sc.open(pc.pos.add(new Vec2(0, change.y * .1)))) {
+                    pc.pos = pc.pos.add(new Vec2(0, change.y * .1));
+                } else {
+                    break;
+                }
             }
+            if (!sc.open(pc.pos)) {
+                pc.pos = pc.pos.add(change);
+            }
+//            pc.pos = pc.pos.subtract(vc.vel);
+//            if (!open(pc.pos)) {
+//                pc.pos = ppc.pos;
+//                if (!open(pc.pos)) {
+//                    System.out.println("bad");
+//                }
+//            }
+//            int count = 0;
+//            while (open(pc.pos.add(vc.vel.multiply(.1))) && count++ < 10) {
+//                pc.pos = pc.pos.add(vc.vel.multiply(.1));
+//            }
         }
+
         //Stop if near goal or can't move
         if (vc.vel.lengthSquared() < 1 && dc.des.subtract(pc.pos).lengthSquared() < 10000) {
             dc.des = pc.pos;
+            dc.changed = true;
         }
     }
 

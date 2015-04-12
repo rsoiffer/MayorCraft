@@ -13,6 +13,11 @@ public class VelocitySystem extends AbstractSystem {
     }
 
     @Override
+    protected boolean pauseable() {
+        return true;
+    }
+
+    @Override
     public void update() {
         pc.pos = pc.pos.add(vc.vel);
     }

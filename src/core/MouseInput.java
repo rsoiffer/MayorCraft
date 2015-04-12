@@ -35,10 +35,10 @@ public abstract class MouseInput {
 
     public static Vec2 mouse() {
         RenderManagerComponent rmc = Main.gameManager.rmc;
-        int w = Display.getWidth();
-        int h = Display.getHeight();
-        int dw = (int) rmc.viewSize.x;
-        int dh = (int) rmc.viewSize.y;
+        double w = Display.getWidth();
+        double h = Display.getHeight();
+        double dw = rmc.viewSize.x;
+        double dh = rmc.viewSize.y;
         double vw, vh;
         if (w * dh > h * dw) {
             vh = h;
@@ -53,8 +53,9 @@ public abstract class MouseInput {
         return new Vec2(rmc.LL().x + (Mouse.getX() - left) * dw / vw, rmc.LL().y + (Mouse.getY() - bottom) * dh / vh);
     }
 
-    public static int wheel() {
-        return wheel;
+    public static Vec2 mouseScreen() {
+        RenderManagerComponent rmc = Main.gameManager.rmc;
+        return mouse().subtract(rmc.LL()).divide(rmc.viewSize).multiply(rmc.displaySize);//.add(rmc.displaySize.multiply(.5));
     }
 
     public static void update() {
@@ -75,5 +76,9 @@ public abstract class MouseInput {
         for (Integer i : down) {
             time.put(i, time.get(i) + 1);
         }
+    }
+
+    public static int wheel() {
+        return wheel;
     }
 }

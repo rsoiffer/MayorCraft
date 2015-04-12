@@ -13,6 +13,11 @@ public class GravitySystem extends AbstractSystem {
     }
 
     @Override
+    protected boolean pauseable() {
+        return true;
+    }
+
+    @Override
     public void update() {
         vc.vel = vc.vel.add(gc.g);
     }

@@ -11,6 +11,11 @@ public class RotationSystem extends AbstractSystem {
     }
 
     @Override
+    protected boolean pauseable() {
+        return true;
+    }
+
+    @Override
     public void update() {
         rc.rot += rc.aVel;
     }

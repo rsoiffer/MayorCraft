@@ -1,13 +1,13 @@
 package world;
 
-import buildings.Building;
+import buildings.Building_2;
 import core.Vec2;
 
 public class GridPoint {
 
     public final int x, y;
     public Center c;
-    public Building building;
+    public Building_2 building;
     public Terrain terrain;
     public boolean blocked;
 

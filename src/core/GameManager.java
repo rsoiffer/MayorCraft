@@ -2,7 +2,10 @@ package core;
 
 import graphics.RenderManagerComponent;
 import graphics.RenderManagerSystem;
-import units.InterfaceSystem;
+import gui.GuiSystem;
+import gui.InterfaceComponent;
+import gui.InterfaceSystem;
+import gui.ResourcesComponent;
 import units.SelectorComponent;
 import world.GridComponent;
 import world.GridSystem;
@@ -23,8 +26,12 @@ public class GameManager extends AbstractEntity {
 
         elc = add(new EntityListComponent());
 
+        ResourcesComponent rc = new ResourcesComponent();
+
         sc = add(new SelectorComponent());
+        InterfaceComponent ic = add(new InterfaceComponent());
         add(new InterfaceSystem(sc));
+        add(new GuiSystem(rc, ic));
 
         gc = add(new GridComponent());
         add(new GridSystem(gc));

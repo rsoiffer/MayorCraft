@@ -18,6 +18,11 @@ public class FrictionSystem extends AbstractSystem {
     }
 
     @Override
+    protected boolean pauseable() {
+        return true;
+    }
+
+    @Override
     public void update() {
         vc.vel = vc.vel.multiply(.99);
         if (vc.vel.lengthSquared() < .005) {

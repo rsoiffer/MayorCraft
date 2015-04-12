@@ -13,6 +13,11 @@ public class PreviousPositionSystem extends AbstractSystem {
     }
 
     @Override
+    protected boolean pauseable() {
+        return true;
+    }
+
+    @Override
     public void update() {
         ppc.pos = pc.pos;
     }

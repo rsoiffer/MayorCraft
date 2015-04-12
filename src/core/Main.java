@@ -1,13 +1,11 @@
 package core;
 
-import buildings.Building;
 import java.util.ArrayList;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import units.Unit;
-import world.Terrain;
 import world.World;
 
 public abstract class Main {
@@ -23,10 +21,11 @@ public abstract class Main {
         }
     }
 
+    public static final int speed = 60;
     public static final int LAYERS = 3;
     public static ArrayList<ArrayList<AbstractSystem>> systems;
-    public static int speed = 60;
     public static GameManager gameManager;
+    public static boolean paused = false;
 
     public static void destroy() {
         Mouse.destroy();
@@ -45,24 +44,27 @@ public abstract class Main {
 
         //Create entities
         new World();
-        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+        for (int i = 0; i < 10; i++) {
+            new Unit(Vec2.random(200), null, null);
+        }
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
     }
 
     public static void run() {
@@ -73,7 +75,9 @@ public abstract class Main {
             //Logic
             for (ArrayList<AbstractSystem> list : systems) {
                 for (int i = 0; i < list.size(); i++) {
-                    list.get(i).update();
+                    if (!paused || !list.get(i).pauseable()) {
+                        list.get(i).update();
+                    }
                 }
             }
             //Graphics

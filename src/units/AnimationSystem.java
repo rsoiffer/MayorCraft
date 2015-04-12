@@ -2,6 +2,7 @@ package units;
 
 import core.AbstractSystem;
 import core.Color4d;
+import core.Main;
 import core.Vec2;
 import graphics.Graphics;
 import movement.PositionComponent;
@@ -37,25 +38,31 @@ public class AnimationSystem extends AbstractSystem {
 
     }
 
+//    @Override
+//    protected boolean pauseable() {
+//        return true;
+//    }
     @Override
     public void update() {
         //Variables
         double speed = pc.pos.subtract(ppc.pos).length();
-        if (speed > 1) {
-            double target = pc.pos.subtract(ppc.pos).direction();
-            //Turn slowly
-            if ((target - rc.rot + 4 * Math.PI) % (2 * Math.PI) < .1) {
-                rc.rot = target;
-            } else {
-                //Figure out which direction to complete the animation to move the legs back to 0
-                if ((target - rc.rot + 4 * Math.PI) % (2 * Math.PI) > Math.PI) {
-                    rc.rot -= .1;
+        if (!Main.paused) {
+            if (speed > 1) {
+                double target = pc.pos.subtract(ppc.pos).direction();
+                //Turn slowly
+                if ((target - rc.rot + 4 * Math.PI) % (2 * Math.PI) < .1) {
+                    rc.rot = target;
                 } else {
-                    rc.rot += .1;
+                    //Figure out which direction to complete the animation to move the legs back to 0
+                    if ((target - rc.rot + 4 * Math.PI) % (2 * Math.PI) > Math.PI) {
+                        rc.rot -= .1;
+                    } else {
+                        rc.rot += .1;
+                    }
                 }
+                rc.rot = (rc.rot + 2 * Math.PI) % (2 * Math.PI);
+                //rc.rot = vc.vel.direction();
             }
-            rc.rot = (rc.rot + 2 * Math.PI) % (2 * Math.PI);
-            //rc.rot = vc.vel.direction();
         }
         Vec2 direction = new Vec2(Math.cos(rc.rot), Math.sin(rc.rot));
 
@@ -65,19 +72,21 @@ public class AnimationSystem extends AbstractSystem {
         //How fast to run the animation
         double walkSpeed = Math.max(1, speed) / ac.stride;
 
-        //Walk forwards
-        if (speed > 1) {
-            ac.time += walkSpeed;
-        } else {
-            //Round
-            if (Math.abs(ac.time - Math.round(ac.time)) < .01) {
-                ac.time = Math.round(ac.time);
+        if (!Main.paused) {
+            //Walk forwards
+            if (speed > 1) {
+                ac.time += walkSpeed;
             } else {
-                //Figure out which direction to complete the animation to move the legs back to 0
-                if (ac.time - (int) ac.time > .5) {
-                    ac.time += walkSpeed;
+                //Round
+                if (Math.abs(ac.time - Math.round(ac.time)) < .01) {
+                    ac.time = Math.round(ac.time);
                 } else {
-                    ac.time -= walkSpeed;
+                    //Figure out which direction to complete the animation to move the legs back to 0
+                    if (ac.time - (int) ac.time > .5) {
+                        ac.time += walkSpeed;
+                    } else {
+                        ac.time -= walkSpeed;
+                    }
                 }
             }
         }

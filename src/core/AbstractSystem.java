@@ -14,5 +14,9 @@ public abstract class AbstractSystem {
         return 0;
     }
 
+    protected boolean pauseable() {
+        return false;
+    }
+
     public abstract void update();
 }

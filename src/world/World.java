@@ -8,7 +8,7 @@ public class World extends AbstractEntity {
 
     static final int POINTS = 10000;
     static final int BUCKETS = POINTS / 10;
-    static final int WORLD_SIZE = 50000;
+    public static final int WORLD_SIZE = 50000;
     public static Random RANDOM;
     public static int SEED = (int) (Math.random() * 10000);
 
