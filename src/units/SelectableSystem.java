@@ -17,7 +17,7 @@ public class SelectableSystem extends AbstractSystem {
     @Override
     public void update() {
         if (Main.gameManager.sc.selected.contains(sc)) {
-            Graphics.drawEllipse(sc.pc.pos, new Vec2(sc.size, sc.size), Color4d.WHITE, 20);
+            Graphics.drawEllipse(sc.pc.pos, new Vec2(sc.size, sc.size), Color4d.WHITE, 50);
         }
     }
 
