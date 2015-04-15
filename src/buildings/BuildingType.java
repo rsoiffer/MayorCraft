@@ -19,4 +19,9 @@ public enum BuildingType {
     public String toString() {
         return name().toLowerCase().replace('_', ' ');
     }
-}
+    public static BuildingType random(){
+        return BuildingType.values()[(int)(Math.random()*BuildingType.values().length)];
+            
+        }
+    }
+

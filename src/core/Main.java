@@ -1,5 +1,8 @@
 package core;
 
+import buildings.Building;
+import buildings.BuildingType;
+import buildings.Building_2;
 import java.util.ArrayList;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -26,6 +29,7 @@ public abstract class Main {
     public static ArrayList<ArrayList<AbstractSystem>> systems;
     public static GameManager gameManager;
     public static boolean paused = false;
+  
 
     public static void destroy() {
         Mouse.destroy();
@@ -46,26 +50,9 @@ public abstract class Main {
         new World();
 
         for (int i = 0; i < 10; i++) {
-            new Unit(Vec2.random(200), null, null);
+            new Unit(Vec2.random(200), BuildingType.random());
         }
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+
     }
 
     public static void run() {
