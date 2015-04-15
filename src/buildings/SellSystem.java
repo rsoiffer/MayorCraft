@@ -10,9 +10,9 @@ package buildings;
  * @author CGoodman16
  */
 public class SellSystem {
-    ValueComponent vc;
+    MonetaryComponent vc;
     LevelComponent lc;
-    public SellSystem(ValueComponent vc, LevelComponent lc){
+    public SellSystem(MonetaryComponent vc, LevelComponent lc){
            this.vc=vc;
            this.lc=lc;
        }

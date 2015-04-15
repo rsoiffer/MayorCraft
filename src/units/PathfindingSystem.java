@@ -48,6 +48,9 @@ public class PathfindingSystem extends AbstractSystem {
 //            }
             if (!visible(pc.pos, target)) {
                 ArrayList<Vec2> list = findPath(target, pc.pos);
+                if (list==null){
+                    return;
+                }
                 for (int i = list.size() - 1; i > 0; i--) {
                     pac.path.add(0, list.get(i));
                 }

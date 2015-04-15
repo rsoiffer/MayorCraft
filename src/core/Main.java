@@ -44,6 +44,7 @@ public abstract class Main {
 
         //Create entities
         new World();
+
         for (int i = 0; i < 10; i++) {
             new Unit(Vec2.random(200), null, null);
         }

@@ -6,6 +6,7 @@ public enum BuildingType {
 
     FIRE_STATION(new Color4d(1, 0, 0)),
     LUMBER_YARD(new Color4d(.6, .6, 0)),
+    MINE(new Color4d(0.4,0.4,0.4)),
     HOUSE(new Color4d(1, .8, .4));
 
     public final Color4d color;

@@ -6,6 +6,7 @@ import core.*;
 import graphics.Graphics;
 import units.SelectableComponent;
 import units.SelectorComponent;
+import static world.GridComponent.SQUARE_SIZE;
 
 public class InterfaceSystem extends AbstractSystem {
 
@@ -19,14 +20,16 @@ public class InterfaceSystem extends AbstractSystem {
     public int getLayer() {
         return 2;
     }
-
+    private Vec2 gridlock(Vec2 v){
+        return new Vec2(v.x-v.x%SQUARE_SIZE+SQUARE_SIZE, v.y-v.y%SQUARE_SIZE);
+    }
     @Override
     public void update() {
         //if ((MouseInput.mouse().y - Main.gameManager.rmc.viewPos.y) / Main.gameManager.rmc.viewSize.y < .4537) {
         if (MouseInput.mouseScreen().y < 1030) {
             //Not on top bar
             if (MouseInput.isReleased(1)) {
-                new Building_2(MouseInput.mouse(), BuildingType.values()[(int) (Math.random() * BuildingType.values().length)]);
+                new Building_2(gridlock(MouseInput.mouse()), BuildingType.values()[(int) (Math.random() * BuildingType.values().length)]);
             }
             if (MouseInput.isPressed(0)) {
                 sc.dragStart = MouseInput.mouse();

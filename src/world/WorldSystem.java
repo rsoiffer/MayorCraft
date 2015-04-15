@@ -31,7 +31,7 @@ public class WorldSystem extends AbstractSystem {
                 }
             }
         }
-    }
+    }  
 
     private void drawLand() {
         for (Center c : wc.centers) {

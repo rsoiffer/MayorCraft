@@ -10,9 +10,7 @@ import movement.PositionComponent;
  */
 public class HousingComponent extends AbstractComponent{
 int capacity;
-public HousingComponent(){
 
-}
 
 
 } 
