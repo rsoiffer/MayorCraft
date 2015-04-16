@@ -24,14 +24,14 @@ public class InterfaceSystem extends AbstractSystem {
     private Vec2 gridlock(Vec2 v){
         return new Vec2(v.x-v.x%SQUARE_SIZE+SQUARE_SIZE, v.y-v.y%SQUARE_SIZE);
     }
-       private void buildRandom(){
+    private void buildRandom(){
                BuildingType buildingType=BuildingType.values()[(int) (Math.random() * BuildingType.values().length)];
                 new Building_2(gridlock(MouseInput.mouse()), buildingType);
-                new Unit(Vec2.random(200), buildingType);
+                new Unit(gridlock(MouseInput.mouse()).add(new Vec2(50,50)), buildingType);
     }
     private void build(BuildingType buildingType){
                 new Building_2(gridlock(MouseInput.mouse()), buildingType);
-                new Unit(Vec2.random(200), buildingType);
+                new Unit(gridlock(MouseInput.mouse()).add(new Vec2(50,50)), buildingType);
     }
      @Override
     public void update() {
