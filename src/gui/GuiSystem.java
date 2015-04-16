@@ -1,5 +1,6 @@
 package gui;
 
+import buildings.BuildingType;
 import core.*;
 import graphics.*;
 import static graphics.SpriteContainer.loadSprite;
@@ -86,6 +87,19 @@ public class GuiSystem extends AbstractSystem {
             }
             //Settings
             Graphics.drawSprite(loadSprite("settings"), new Vec2(1890, 1055), new Vec2(1, 1), 0, Color4d.WHITE);
+
+            //Building buttons
+            if (ic.constructionMode) {
+                Graphics.fillRect(new Vec2(1920, 1030), new Vec2(-200, -BuildingType.values().length * 100), new Color4d(.5, .5, 1));
+                for (int i = 0; i < BuildingType.values().length; i++) {
+                    if (i == ic.buildingSelected) {
+                        Graphics.fillRect(new Vec2(1730, 950 - 100 * i), new Vec2(180, 70), new Color4d(.7, 1, 1));
+                    } else {
+                        Graphics.fillRect(new Vec2(1730, 950 - 100 * i), new Vec2(180, 70), new Color4d(.7, .7, 1));
+                    }
+                    Graphics.drawText(BuildingType.values()[i].toString(), "GUI", new Vec2(1730, 1000 - 100 * i), Color.black);
+                }
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }

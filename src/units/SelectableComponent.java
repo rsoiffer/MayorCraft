@@ -7,7 +7,6 @@ import movement.PositionComponent;
 
 public class SelectableComponent extends AbstractComponent {
 
-    public int id;
     public double size;
     public PositionComponent pc;
     public DestinationComponent dc;
@@ -17,7 +16,6 @@ public class SelectableComponent extends AbstractComponent {
     }
 
     public SelectableComponent(double size, PositionComponent pc, DestinationComponent dc) {
-        id = Main.gameManager.sc.id++;
         this.size = size;
         this.pc = pc;
         this.dc = dc;

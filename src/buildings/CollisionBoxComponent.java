@@ -11,7 +11,7 @@ public class CollisionBoxComponent extends AbstractComponent {
 
     public ArrayList<GridPoint> covered;
 
-    public CollisionBoxComponent(Building_2 b, Vec2 LL, Vec2 UR) {
+    public CollisionBoxComponent(Building b, Vec2 LL, Vec2 UR) {
         covered = new ArrayList();
         GridComponent gc = Main.gameManager.gc;
         for (int i = gc.get(LL).x; i <= gc.get(UR).x; i++) {
