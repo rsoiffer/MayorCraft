@@ -20,6 +20,12 @@ public class Color4d {
         this.b = b;
         this.a = a;
     }
+    public Color4d(double r, double g, double b, double a, boolean t){
+        this.r = r/255;
+        this.g = g/255;
+        this.b = b/255;
+        this.a = a/255;
+    }
 
     public Color4d(double r, double g, double b) {
         this(r, g, b, 1);

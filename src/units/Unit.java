@@ -30,7 +30,7 @@ public class Unit extends AbstractEntity {
         add(new VelocitySystem(pc, vc));
         add(new CollisionSystem(pc, ppc, vc, slc, dc));
         add(new SelectableSystem(slc));
-        add(new RenderSystem(pc, rc, sc));
+       // add(new RenderSystem(pc, rc, sc));
         add(new AnimationSystem(ac, pc, ppc, rc));
         add(new PreviousPositionSystem(pc, ppc));
     }

@@ -5,6 +5,7 @@ import core.Color4d;
 import core.Main;
 import core.Vec2;
 import graphics.Graphics;
+import graphics.SpriteContainer;
 import movement.PositionComponent;
 import movement.PreviousPositionComponent;
 import movement.RotationComponent;
@@ -15,6 +16,7 @@ public class AnimationSystem extends AbstractSystem {
     private PositionComponent pc;
     private PreviousPositionComponent ppc;
     private RotationComponent rc;
+    private final double DETAIL=50;
 
     public AnimationSystem(AnimationComponent ac, PositionComponent pc, PreviousPositionComponent ppc, RotationComponent rc) {
         this.ac = ac;
@@ -117,5 +119,10 @@ public class AnimationSystem extends AbstractSystem {
             drawLimb(ac.armL, direction, left, 0, 3);
             drawLimb(ac.armR, direction, right, 0, 3);
         }
+         Graphics.fillEllipse(pc.pos, new Vec2(7,8), ac.armL.color1, DETAIL);
+         Graphics.drawEllipse(pc.pos, new Vec2(7,8), Color4d.BLACK, DETAIL);
+       //  Graphics.fillEllipse(pc.pos.add(new Vec2(0,8)), new Vec2(1,1), new Color4d(255,211,168,255, true), DETAIL);
+         //Graphics.fillEllipse(pc.pos.add(new Vec2(0,-8)), new Vec2(1,1), new Color4d(255,211,168,255, true), DETAIL);
+         Graphics.drawEllipse(pc.pos.add(direction.multiply(5)), new Vec2(4,6), ac.armL.color1, DETAIL);
     }
 }
