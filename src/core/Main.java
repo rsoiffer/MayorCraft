@@ -1,8 +1,6 @@
 package core;
 
-import buildings.Building;
 import buildings.BuildingType;
-import buildings.Building_2;
 import java.util.ArrayList;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
