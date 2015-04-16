@@ -30,7 +30,7 @@ public class GameManager extends AbstractEntity {
 
         sc = add(new SelectorComponent());
         InterfaceComponent ic = add(new InterfaceComponent());
-        add(new InterfaceSystem(sc));
+        add(new InterfaceSystem(sc, ic));
         add(new GuiSystem(rc, ic));
 
         gc = add(new GridComponent());

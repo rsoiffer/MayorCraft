@@ -10,6 +10,10 @@ public abstract class SpriteContainer {
     private static String path = "sprites/";
     private static String type = ".png";
 
+    public static Texture loadSprite(String name) throws IOException {
+        return loadSprite(name, 1, 1).get(0);
+    }
+
     public static ArrayList<Texture> loadSprite(String name, int x, int y) throws IOException {
         if (spriteMap.containsKey(name)) {
             return spriteMap.get(name);

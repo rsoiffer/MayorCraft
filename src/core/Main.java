@@ -22,6 +22,7 @@ public abstract class Main {
         } finally {
             destroy();
         }
+        System.exit(0);
     }
 
     public static final int speed = 60;
@@ -52,7 +53,31 @@ public abstract class Main {
         for (int i = 0; i < 10; i++) {
             new Unit(Vec2.random(200), BuildingType.random());
         }
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
+//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
 
+        try {
+            //Sound
+            Sounds.playSound("music2.mid", true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static void run() {
