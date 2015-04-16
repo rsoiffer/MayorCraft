@@ -35,13 +35,8 @@ public class AnimationSystem extends AbstractSystem {
         Graphics.drawWideLine(l.pos, middle, l.color1, size);
         Graphics.fillEllipse(middle, new Vec2(size, size), l.color2, 10);
         Graphics.drawWideLine(base, middle, l.color2, size);
-
     }
 
-//    @Override
-//    protected boolean pauseable() {
-//        return true;
-//    }
     @Override
     public void update() {
         //Variables
