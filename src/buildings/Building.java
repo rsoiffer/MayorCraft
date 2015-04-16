@@ -7,7 +7,12 @@
 package buildings;
 
 import core.AbstractEntity;
+import core.Color4d;
+import core.Vec2;
+import graphics.RenderSystem;
+import graphics.SpriteComponent;
 import movement.PositionComponent;
+import movement.RotationComponent;
 
 /**
  *
@@ -56,14 +61,15 @@ import movement.PositionComponent;
  * @author CGoodman16
  */
 public class Building extends AbstractEntity{
-    //components
+    public Building(){//components
     PositionComponent pc = add(new PositionComponent()); 
-     ValueComponent vc = add(new ValueComponent());
-    /**UnitCreationComponent*/UnitCreationComponent uc = add(new UnitCreationComponent());
-    /**HousingComponent*/ FooSystem hc = add(new FooSystem());
-    /**TypeComponent*/ FooSystem tc = add(new FooSystem());
-    /**UpkeepComponent*/ FooSystem ic = add(new FooSystem());
-    /**SizeComponent*/ FooSystem sc = add(new FooSystem());
+    SpriteComponent sc= add(new SpriteComponent("Door_building"));
+    MonetaryComponent vc = add(new MonetaryComponent());
+    RotationComponent rc = add(new RotationComponent());
+    UnitCreationComponent uc = add(new UnitCreationComponent());
+    HousingComponent hc = add(new HousingComponent());
+ 
+    /**SizeComponent*/ FooSystem szc = add(new FooSystem());
     /**LevelComponent*/ FooSystem lc = add(new FooSystem());
     //systems
     /**SellSystem*/ FooSystem vs = add(new FooSystem());
@@ -71,6 +77,10 @@ public class Building extends AbstractEntity{
     /**TypeSystem*/ FooSystem ts = add(new FooSystem());
     /**IncomeSystem*/ FooSystem is = add(new FooSystem());
     /**LevelSystem*/ FooSystem ls = add(new FooSystem());
-    
-    
+    RenderSystem rs= add(new RenderSystem(pc, rc, sc));
+    sc.color=new Color4d(1,0.2,0.1,1);
+    sc.scale=new Vec2(2,2);
+    }
+ 
+ 
 }

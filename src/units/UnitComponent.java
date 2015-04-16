@@ -6,6 +6,7 @@
 package units;
 
 import buildings.Building;
+import buildings.BuildingType;
 import core.AbstractComponent;
 import world.Terrain;
 
@@ -13,12 +14,12 @@ import world.Terrain;
  *
  * @author CGoodman16
  */
-public class ResourceComponent extends AbstractComponent{
-    private Terrain ter;
+public class UnitComponent extends AbstractComponent{
     private Building build;
-    public ResourceComponent(Terrain t, Building b){
-        ter=t;
-        build=b;
-               
-    }
+ 
+    public UnitComponent(BuildingType build){
+        
+        
+    }           
+    
 }
