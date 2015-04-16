@@ -24,8 +24,6 @@ public class Vec2 {
     public boolean containedBy(Vec2 v1, Vec2 v2) {
         return v1.quadrant(this) != v2.quadrant(this) && v1.quadrant(this) % 2 == v2.quadrant(this) % 2;
     }
-    
-
 
     public double cross(Vec2 other) {
         return x * other.y - y * other.x;

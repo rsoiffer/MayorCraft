@@ -19,30 +19,34 @@ public class InterfaceSystem extends AbstractSystem {
         this.ic = ic;
     }
 
+    private void build(BuildingType buildingType) {
+        new Building_2(gridlock(MouseInput.mouse()), buildingType);
+        new Unit(gridlock(MouseInput.mouse()).add(new Vec2(50, 50)), buildingType);
+    }
+
+    private void buildRandom() {
+        BuildingType buildingType = BuildingType.values()[(int) (Math.random() * BuildingType.values().length)];
+        new Building_2(gridlock(MouseInput.mouse()), buildingType);
+        new Unit(gridlock(MouseInput.mouse()).add(new Vec2(50, 50)), buildingType);
+    }
+
     @Override
     public int getLayer() {
         return 2;
     }
-    private Vec2 gridlock(Vec2 v){
-        return new Vec2(v.x-v.x%SQUARE_SIZE+SQUARE_SIZE, v.y-v.y%SQUARE_SIZE);
+
+    private Vec2 gridlock(Vec2 v) {
+        return new Vec2(v.x - v.x % SQUARE_SIZE + SQUARE_SIZE, v.y - v.y % SQUARE_SIZE);
     }
-    private void buildRandom(){
-               BuildingType buildingType=BuildingType.values()[(int) (Math.random() * BuildingType.values().length)];
-                new Building_2(gridlock(MouseInput.mouse()), buildingType);
-                new Unit(gridlock(MouseInput.mouse()).add(new Vec2(50,50)), buildingType);
-    }
-    private void build(BuildingType buildingType){
-                new Building_2(gridlock(MouseInput.mouse()), buildingType);
-                new Unit(gridlock(MouseInput.mouse()).add(new Vec2(50,50)), buildingType);
-    }
-     @Override
+
+    @Override
     public void update() {
         //if ((MouseInput.mouse().y - Main.gameManager.rmc.viewPos.y) / Main.gameManager.rmc.viewSize.y < .4537) {
         if (MouseInput.mouseScreen().y < 1030) {
             //Not on top bar
             if (MouseInput.isReleased(1)) {
-             buildRandom();
-            }   
+                buildRandom();
+            }
             if (MouseInput.isPressed(0)) {
                 sc.dragStart = MouseInput.mouse();
             }
@@ -73,15 +77,15 @@ public class InterfaceSystem extends AbstractSystem {
                         }
                     }
                     //Move unit
-                    for (SelectableComponent s : sc.selected) { 
-                        if (s.dc != null) { 
+                    for (SelectableComponent s : sc.selected) {
+                        if (s.dc != null) {
                             s.dc.des = MouseInput.mouse();
                             s.dc.changed = true;
-                        } 
-                    } 
-                } 
-            } 
-        } else { 
+                        }
+                    }
+                }
+            }
+        } else {
             //On top bar
             if (MouseInput.isReleased(0)) {
                 //Construction button
@@ -92,9 +96,9 @@ public class InterfaceSystem extends AbstractSystem {
                 if (MouseInput.mouseScreen().containedBy(new Vec2(1824, 1039), new Vec2(1856, 1071))) {
                     Main.paused = !Main.paused;
                 }
-        
+
             }
-            
+
         }
     }
 }
