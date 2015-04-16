@@ -19,6 +19,7 @@ public abstract class Main {
         } finally {
             destroy();
         }
+        System.exit(0);
     }
 
     public static final int speed = 60;
@@ -65,6 +66,13 @@ public abstract class Main {
 //        new Unit(Vec2.random(100), Terrain.TREE, new Building());
 //        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
 //        new Unit(Vec2.random(100), Terrain.TREE, new Building());
+
+        try {
+            //Sound
+            Sounds.playSound("music2.mid", true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static void run() {

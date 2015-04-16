@@ -10,9 +10,11 @@ import units.SelectorComponent;
 public class InterfaceSystem extends AbstractSystem {
 
     private SelectorComponent sc;
+    private InterfaceComponent ic;
 
-    public InterfaceSystem(SelectorComponent sc) {
+    public InterfaceSystem(SelectorComponent sc, InterfaceComponent ic) {
         this.sc = sc;
+        this.ic = ic;
     }
 
     @Override
@@ -69,6 +71,11 @@ public class InterfaceSystem extends AbstractSystem {
         } else {
             //On top bar
             if (MouseInput.isReleased(0)) {
+                //Construction button
+                if (MouseInput.mouseScreen().containedBy(new Vec2(1700, 1030), new Vec2(1800, 1080))) {
+                    ic.constructionMode = !ic.constructionMode;
+                }
+                //Pause button
                 if (MouseInput.mouseScreen().containedBy(new Vec2(1824, 1039), new Vec2(1856, 1071))) {
                     Main.paused = !Main.paused;
                 }
