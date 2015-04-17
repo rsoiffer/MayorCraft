@@ -22,5 +22,8 @@ public class Building extends AbstractEntity {
         //Systems
         add(new RenderSystem(pc, sc));
         add(new SelectableSystem(slc));
+        if (type==BuildingType.HOUSE){
+        add(new HouseSystem(pc));
+        }
     }
 }
