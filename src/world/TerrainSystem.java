@@ -16,14 +16,14 @@ public class TerrainSystem extends AbstractSystem {
         this.tc = tc;
     }
 
-    private void drawTerrain(ArrayList<Vec2> list, Texture tex) {
+    private void drawTerrain(ArrayList<GridPoint> list, Texture tex) {
         tex.bind();
         Vec2 halfSize = tex.size().multiply(.5);
         glBegin(GL_QUADS);
-        for (Vec2 v : list) {
-            if (Main.gameManager.rmc.nearInView(v, halfSize)) {
-                double x = v.x - tex.getImageWidth() / 2;
-                double y = v.y - tex.getImageHeight() / 2;
+        for (GridPoint gp : list) {
+            if (Main.gameManager.rmc.nearInView(gp.toVec2(), halfSize)) {
+                double x = gp.toVec2().x - tex.getImageWidth() / 2;
+                double y = gp.toVec2().y - tex.getImageHeight() / 2;
                 {
                     glTexCoord2d(0, 0);
                     glVertex2d(x, y + tex.getImageHeight()); //Height reversed because sprite y axis upside-down

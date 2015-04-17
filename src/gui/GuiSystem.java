@@ -2,6 +2,7 @@ package gui;
 
 import buildings.BuildingType;
 import core.*;
+import game.ResourcesComponent;
 import graphics.*;
 import static graphics.SpriteContainer.loadSprite;
 import java.awt.Font;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import static org.lwjgl.opengl.GL11.*;
 import org.newdawn.slick.Color;
 import units.Unit;
+import world.GridComponent;
 import static world.GridComponent.SQUARE_SIZE;
 
 public class GuiSystem extends AbstractSystem {
@@ -19,7 +21,7 @@ public class GuiSystem extends AbstractSystem {
     public GuiSystem(ResourcesComponent rc, InterfaceComponent ic) {
         this.rc = rc;
         this.ic = ic;
-        FontContainer.add("GUI", "Calibri", Font.PLAIN, 30);
+        FontContainer.add("GUI", "Brush Script MT", Font.PLAIN, 30);
     }
 
     @Override
@@ -47,6 +49,17 @@ public class GuiSystem extends AbstractSystem {
                     new Vec2(rmc.UR().x, i).glVertex();
                 }
                 glEnd();
+            }
+            //Draw potential buildings
+            if (ic.constructionMode && ic.buildingSelected >= 0 && ic.selected().enoughResources()) {
+                if (MouseInput.mouseScreen().y < 1030 && !MouseInput.mouseScreen().containedBy(new Vec2(1720, 1030 - BuildingType.values().length * 100), new Vec2(1920, 1030))) {
+                    Vec2 pos = GridComponent.gridlock(MouseInput.mouse());
+                    if (ic.selected().validPos()) {
+                        Graphics.fillRect(pos.subtract(new Vec2(100, 100)), new Vec2(200, 200), new Color4d(0, 1, 0, .5));
+                    } else {
+                        Graphics.fillRect(pos.subtract(new Vec2(100, 100)), new Vec2(200, 200), new Color4d(1, 0, 0, .5));
+                    }
+                }
             }
 
             //Set view for easy drawing
@@ -85,14 +98,20 @@ public class GuiSystem extends AbstractSystem {
             } else {
                 Graphics.drawSprite(loadSprite("pause"), new Vec2(1840, 1055), new Vec2(1, 1), 0, Color4d.WHITE);
             }
-            //Settings
-            Graphics.drawSprite(loadSprite("settings"), new Vec2(1890, 1055), new Vec2(1, 1), 0, Color4d.WHITE);
+            //Mute
+            if (ic.muted) {
+                Graphics.drawSprite(loadSprite("mute2"), new Vec2(1890, 1055), new Vec2(1, 1), 0, Color4d.WHITE);
+            } else {
+                Graphics.drawSprite(loadSprite("mute1"), new Vec2(1890, 1055), new Vec2(1, 1), 0, Color4d.WHITE);
+            }
 
             //Building buttons
             if (ic.constructionMode) {
                 Graphics.fillRect(new Vec2(1920, 1030), new Vec2(-200, -BuildingType.values().length * 100), new Color4d(.5, .5, 1));
                 for (int i = 0; i < BuildingType.values().length; i++) {
-                    if (i == ic.buildingSelected) {
+                    if (!BuildingType.values()[i].enoughResources()) {
+                        Graphics.fillRect(new Vec2(1730, 950 - 100 * i), new Vec2(180, 70), new Color4d(.7, .5, .5));
+                    } else if (i == ic.buildingSelected) {
                         Graphics.fillRect(new Vec2(1730, 950 - 100 * i), new Vec2(180, 70), new Color4d(.7, 1, 1));
                     } else {
                         Graphics.fillRect(new Vec2(1730, 950 - 100 * i), new Vec2(180, 70), new Color4d(.7, .7, 1));

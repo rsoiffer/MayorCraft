@@ -33,41 +33,72 @@ public class PathfindingSystem extends AbstractSystem {
 
     @Override
     public void update() {
+        //If needed, update destination
         if (dc.changed) {
+            GridPoint gp = Main.gameManager.gc.get(dc.des);
+            dc.building = gp.building;
+            if (dc.building != null) {
+                dc.des = dc.building.getComponent(PositionComponent.class).pos;
+            }
+            if (gp.terrain != null) {
+                dc.terrain = gp;
+                dc.des = gp.toVec2();
+            } else {
+                dc.terrain = null;
+            }
             pac.path = findPath(dc.des, pc.pos);
             dc.changed = false;
+            dc.atDest = false;
         }
-        if (pac.path != null && !pac.path.isEmpty()) {
-            while (pac.path.size() >= 2 && visible(pc.pos, pac.path.get(1))) {
-                pac.path.remove(0);
+        //Check if at destination
+        if (dc.building != null) {
+            if (pc.pos.subtract(dc.building.getComponent(PositionComponent.class).pos).lengthSquared() < 22500) {
+                dc.atDest = true;
             }
-            Vec2 target = pac.path.get(0);
+        } else if (dc.terrain != null) {
+            if (pc.pos.subtract(dc.terrain.toVec2()).lengthSquared() < 2500) {
+                dc.atDest = true;
+            }
+        } else if (pc.pos.equals(dc.des)) {
+            dc.atDest = true;
+        }
+        //Follow path
+        if (dc.atDest) {
+            vc.vel = new Vec2();
+        } else {
+            if (pac.path != null && !pac.path.isEmpty()) {
+                while (pac.path.size() >= 2 && visible(pc.pos, pac.path.get(1))) {
+                    pac.path.remove(0);
+                }
+                Vec2 target = pac.path.get(0);
 //            Graphics.drawLine(pc.pos, target, Color4d.RED, 1);
 //            for (int i = 0; i < pac.path.size() - 1; i++) {
 //                Graphics.drawLine(pac.path.get(i), pac.path.get(i + 1), Color4d.RED, 1);
 //            }
-            if (!visible(pc.pos, target)) {
-                ArrayList<Vec2> list = findPath(target, pc.pos);
-                if (list==null){
-                    return;
+                if (!visible(pc.pos, target)) {
+                    ArrayList<Vec2> list = findPath(target, pc.pos);
+                    if (list == null) {
+                        return;
+                    }
+                    for (int i = list.size() - 1; i > 0; i--) {
+                        pac.path.add(0, list.get(i));
+                    }
+                    //return;
                 }
-                for (int i = list.size() - 1; i > 0; i--) {
-                    pac.path.add(0, list.get(i));
+                if (target.subtract(pc.pos).lengthSquared() > 4) {
+                    vc.vel = target.subtract(pc.pos).setLength(4);
+                } else {
+                    vc.vel = target.subtract(pc.pos);
+                    pac.path.remove(0);
                 }
-                //return;
-            }
-            if (target.subtract(pc.pos).lengthSquared() > 4) {
-                vc.vel = target.subtract(pc.pos).setLength(4);
             } else {
-                vc.vel = target.subtract(pc.pos);
-                pac.path.remove(0);
-            }
-        } else {
-            Vec2 target = dc.des;
-            if (target.subtract(pc.pos).lengthSquared() > 4) {
-                vc.vel = target.subtract(pc.pos).setLength(4);
-            } else {
-                vc.vel = target.subtract(pc.pos);
+                //Direct to destination
+                Vec2 target = dc.des;
+                if (target.subtract(pc.pos).lengthSquared() > 4) {
+                    vc.vel = target.subtract(pc.pos).setLength(4);
+                } else {
+                    vc.vel = target.subtract(pc.pos);
+                }
             }
         }
     }
@@ -97,7 +128,7 @@ public class PathfindingSystem extends AbstractSystem {
     }
 
     private boolean blocked(GridPoint gp) {
-        return gp.blocked;
+        return dc.terrain != gp && (dc.building == null || gp.building != dc.building) && gp.blocked;
     }
 
     private ArrayList<Vec2> findPath(Vec2 startV, Vec2 goalV) {

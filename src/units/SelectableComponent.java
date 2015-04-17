@@ -4,6 +4,7 @@ import core.AbstractComponent;
 import core.Main;
 import core.Vec2;
 import movement.PositionComponent;
+import world.GridPoint;
 
 public class SelectableComponent extends AbstractComponent {
 
@@ -29,6 +30,11 @@ public class SelectableComponent extends AbstractComponent {
     }
 
     public boolean open(Vec2 pos) {
-        return Main.gameManager.gc.open(pos.subtract(new Vec2(size, size)), pos.add(new Vec2(size, size)));
+        for (GridPoint gp : Main.gameManager.gc.points(pos.subtract(new Vec2(size, size)), pos.add(new Vec2(size, size)))) {
+            if (gp.blocked) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -10,6 +10,7 @@ public class GridPoint {
     public Building building;
     public Terrain terrain;
     public boolean blocked;
+    public boolean onRiver;
 
     GridPoint(int x, int y) {
         this.x = x;

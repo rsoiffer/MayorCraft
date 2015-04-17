@@ -6,6 +6,7 @@ import core.Main;
 import core.Vec2;
 import graphics.Graphics;
 import graphics.SpriteContainer;
+import java.io.IOException;
 import movement.PositionComponent;
 import movement.PreviousPositionComponent;
 import movement.RotationComponent;
@@ -16,7 +17,7 @@ public class AnimationSystem extends AbstractSystem {
     private PositionComponent pc;
     private PreviousPositionComponent ppc;
     private RotationComponent rc;
-    private final double DETAIL=50;
+    private final double DETAIL = 50;
 
     public AnimationSystem(AnimationComponent ac, PositionComponent pc, PreviousPositionComponent ppc, RotationComponent rc) {
         this.ac = ac;
@@ -34,9 +35,9 @@ public class AnimationSystem extends AbstractSystem {
         Vec2 middle = base.interpolate(l.pos, .5).add(direction.multiply(ac.width * forward));
 
         //Draw segments and middle
-        Graphics.drawWideLine(l.pos, middle, l.color1, size);
-        Graphics.fillEllipse(middle, new Vec2(size, size), l.color2, 10);
-        Graphics.drawWideLine(base, middle, l.color2, size);
+        Graphics.drawWideLine(l.pos, middle, ac.color, size);
+        Graphics.fillEllipse(middle, new Vec2(size, size), ac.color, 10);
+        Graphics.drawWideLine(base, middle, ac.color, size);
     }
 
     @Override
@@ -119,10 +120,15 @@ public class AnimationSystem extends AbstractSystem {
             drawLimb(ac.armL, direction, left, 0, 3);
             drawLimb(ac.armR, direction, right, 0, 3);
         }
-         Graphics.fillEllipse(pc.pos, new Vec2(7,8), ac.armL.color1, DETAIL);
-         Graphics.drawEllipse(pc.pos, new Vec2(7,8), Color4d.BLACK, DETAIL);
-       //  Graphics.fillEllipse(pc.pos.add(new Vec2(0,8)), new Vec2(1,1), new Color4d(255,211,168,255, true), DETAIL);
-         //Graphics.fillEllipse(pc.pos.add(new Vec2(0,-8)), new Vec2(1,1), new Color4d(255,211,168,255, true), DETAIL);
-         Graphics.drawEllipse(pc.pos.add(direction.multiply(5)), new Vec2(4,6), ac.armL.color1, DETAIL);
+        try {
+            Graphics.drawSprite(SpriteContainer.loadSprite("PoliceHead2"), pc.pos, new Vec2(1, 1), rc.rot, ac.color);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+//         Graphics.fillEllipse(pc.pos, new Vec2(7,8), ac.armL.color1, DETAIL);
+//         Graphics.drawEllipse(pc.pos, new Vec2(7,8), Color4d.BLACK, DETAIL);
+//       //  Graphics.fillEllipse(pc.pos.add(new Vec2(0,8)), new Vec2(1,1), new Color4d(255,211,168,255, true), DETAIL);
+//         //Graphics.fillEllipse(pc.pos.add(new Vec2(0,-8)), new Vec2(1,1), new Color4d(255,211,168,255, true), DETAIL);
+//         Graphics.drawEllipse(pc.pos.add(direction.multiply(5)), new Vec2(4,6), ac.armL.color1, DETAIL);
     }
 }

@@ -15,17 +15,21 @@ public class Edge {
     public Vec2 LL;
     public Vec2 UR;
 
+    public boolean contains(Vec2 pos) {
+        if (water == 0) {
+            return false;
+        }
+        double widthSq = World.riverWidth(water) * World.riverWidth(water);
+        for (Vec2 v : noisePath) {
+            if (v.subtract(pos).lengthSquared() < widthSq) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean inView(RenderManagerComponent rmc) {
         Vec2 buffer = new Vec2(1, 1).multiply(World.riverWidth(water));
         return LL.subtract(buffer).quadrant(rmc.UR()) == 1 && rmc.LL().quadrant(UR.add(buffer)) == 1;
-
-//        return rmc.nearInView(p0.pos, new Vec2(World.SIZE, World.SIZE).multiply(2 / Math.sqrt(World.POINTS)))
-//                || rmc.nearInView(p1.pos, new Vec2(World.SIZE, World.SIZE).multiply(2 / Math.sqrt(World.POINTS)));
-//        for (Vec2 pos : noisePath) {
-//            if (rmc.nearInView(pos, new Vec2(1, 1).multiply(World.riverWidth(water)))) {
-//                return true;
-//            }
-//        }
-//        return false;
     }
 }

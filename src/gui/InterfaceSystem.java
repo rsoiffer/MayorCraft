@@ -1,19 +1,22 @@
 package gui;
 
-import buildings.BuildingType;
 import buildings.Building;
+import buildings.BuildingType;
 import core.*;
+import game.ResourcesComponent;
 import graphics.Graphics;
 import units.SelectableComponent;
 import units.SelectorComponent;
-import static world.GridComponent.SQUARE_SIZE;
+import world.GridComponent;
 
 public class InterfaceSystem extends AbstractSystem {
 
+    private ResourcesComponent rc;
     private SelectorComponent sc;
     private InterfaceComponent ic;
 
-    public InterfaceSystem(SelectorComponent sc, InterfaceComponent ic) {
+    public InterfaceSystem(ResourcesComponent rc, SelectorComponent sc, InterfaceComponent ic) {
+        this.rc = rc;
         this.sc = sc;
         this.ic = ic;
     }
@@ -21,10 +24,6 @@ public class InterfaceSystem extends AbstractSystem {
     @Override
     public int getLayer() {
         return 2;
-    }
-
-    private Vec2 gridlock(Vec2 v) {
-        return new Vec2(Math.round(v.x / SQUARE_SIZE) * SQUARE_SIZE, Math.round(v.y / SQUARE_SIZE) * SQUARE_SIZE);
     }
 
     @Override
@@ -58,18 +57,6 @@ public class InterfaceSystem extends AbstractSystem {
                 }
             }
             if (MouseInput.isReleased(0)) {
-                if (ic.constructionMode && ic.buildingSelected >= 0) {
-                    //Create building
-                    if (Main.gameManager.gc.open(gridlock(MouseInput.mouse()).subtract(new Vec2(90, 90)), gridlock(MouseInput.mouse()).add(new Vec2(90, 90)))) {
-                        for (SelectableComponent sc : sc.selected) {
-                            if (sc.dc != null && sc.pc.pos.subtract(new Vec2(sc.size, sc.size)).quadrant(gridlock(MouseInput.mouse()).add(new Vec2(90, 90))) == 1
-                                    && sc.pc.pos.add(new Vec2(sc.size, sc.size)).quadrant(gridlock(MouseInput.mouse()).subtract(new Vec2(90, 90))) == 3) {
-                                return;
-                            }
-                        }
-                        new Building(gridlock(MouseInput.mouse()), BuildingType.values()[ic.buildingSelected]);
-                    }
-                }
                 if (sc.dragStart != null && MouseInput.getTime(0) > 10 && sc.dragStart.subtract(MouseInput.mouse()).lengthSquared() > 100) {
                     //Select by dragging
                     sc.selected.clear();
@@ -88,6 +75,15 @@ public class InterfaceSystem extends AbstractSystem {
                     }
                     sc.dragStart = null;
                 } else {
+                    //Create building
+                    if (ic.constructionMode && ic.buildingSelected >= 0) {
+                        if (ic.selected().validPos() && ic.selected().enoughResources()) {
+                            new Building(GridComponent.gridlock(MouseInput.mouse()), ic.selected());
+                            ic.selected().spendResources();
+                            ic.buildingSelected = -1;
+                            return;
+                        }
+                    }
                     //Select unit
                     for (SelectableComponent s : sc.all) {
                         if (s.dc != null || !sc.isUnitSelected()) {
@@ -117,6 +113,16 @@ public class InterfaceSystem extends AbstractSystem {
                 //Pause button
                 if (MouseInput.mouseScreen().containedBy(new Vec2(1824, 1039), new Vec2(1856, 1071))) {
                     Main.paused = !Main.paused;
+                }
+                //Mute button
+                if (MouseInput.mouseScreen().containedBy(new Vec2(1874, 1039), new Vec2(1906, 1071))) {
+                    ic.muted = !ic.muted;
+                    if (ic.muted) {
+                        Sounds.stopAll();
+                        Sounds.GLOBAL_VOLUME = 0;
+                    } else {
+                        Sounds.GLOBAL_VOLUME = 1;
+                    }
                 }
             }
         }

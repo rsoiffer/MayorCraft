@@ -1,6 +1,6 @@
 package core;
 
-import buildings.BuildingType;
+import static buildings.BuildingType.HOUSE;
 import java.util.ArrayList;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -28,7 +28,6 @@ public abstract class Main {
     public static ArrayList<ArrayList<AbstractSystem>> systems;
     public static GameManager gameManager;
     public static boolean paused = false;
-  
 
     public static void destroy() {
         Mouse.destroy();
@@ -48,33 +47,9 @@ public abstract class Main {
         //Create entities
         new World();
 
+        new Unit(Vec2.random(200), null);
         for (int i = 0; i < 10; i++) {
-            new Unit(Vec2.random(200), BuildingType.random());
-        }
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-//        new Unit(Vec2.random(100), Terrain.ROCK, new Building());
-//        new Unit(Vec2.random(100), Terrain.TREE, new Building());
-
-        try {
-            //Sound
-            Sounds.playSound("music2.mid", true);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            new Unit(Vec2.random(200), HOUSE);
         }
     }
 

@@ -230,6 +230,21 @@ public class WorldComponent extends AbstractComponent {
                 }
             }
         }
+        //Calculate river areas
+        for (Edge e : edges) {
+            if (e.water > 0) {
+                for (int i = ((int) e.LL.x + WORLD_SIZE) / SQUARE_SIZE - (int) riverWidth(e.water); i < ((int) e.UR.x + WORLD_SIZE) / SQUARE_SIZE + 1 + (int) riverWidth(e.water); i++) {
+                    for (int j = ((int) e.LL.y + WORLD_SIZE) / SQUARE_SIZE - (int) riverWidth(e.water); j < ((int) e.UR.y + WORLD_SIZE) / SQUARE_SIZE + 1 + (int) riverWidth(e.water); j++) {
+                        if (i < GRID_SIZE && j < GRID_SIZE) {
+                            GridPoint gp = Main.gameManager.gc.get(i, j);
+                            if (e.contains(gp.toVec2())) {
+                                gp.onRiver = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void createPolygons() {

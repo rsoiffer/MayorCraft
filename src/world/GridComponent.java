@@ -2,6 +2,7 @@ package world;
 
 import core.AbstractComponent;
 import core.Vec2;
+import java.util.ArrayList;
 import static world.World.WORLD_SIZE;
 
 public class GridComponent extends AbstractComponent {
@@ -30,17 +31,32 @@ public class GridComponent extends AbstractComponent {
         return grid[((int) v.x + WORLD_SIZE) / SQUARE_SIZE][((int) v.y + WORLD_SIZE) / SQUARE_SIZE];
     }
 
-    public boolean open(Vec2 v1, Vec2 v2) {
+    public static Vec2 gridlock(Vec2 v) {
+        return new Vec2(Math.round(v.x / SQUARE_SIZE) * SQUARE_SIZE, Math.round(v.y / SQUARE_SIZE) * SQUARE_SIZE);
+    }
+
+//    public boolean open(Vec2 v1, Vec2 v2) {
+//        GridPoint g1 = get(v1);
+//        GridPoint g2 = get(v2);
+//        for (int i = g1.x; i <= g2.x; i++) {
+//            for (int j = g1.y; j <= g2.y; j++) {
+//                if (grid[i][j].blocked) {
+//                    return false;
+//                }
+//            }
+//        }
+//        return true;
+//    }
+    public ArrayList<GridPoint> points(Vec2 v1, Vec2 v2) {
+        ArrayList<GridPoint> r = new ArrayList();
         GridPoint g1 = get(v1);
         GridPoint g2 = get(v2);
         for (int i = g1.x; i <= g2.x; i++) {
             for (int j = g1.y; j <= g2.y; j++) {
-                if (grid[i][j].blocked) {
-                    return false;
-                }
+                r.add(grid[i][j]);
             }
         }
-        return true;
+        return r;
     }
 
     public static Vec2 pos(int i, int j) {
