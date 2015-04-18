@@ -1,6 +1,9 @@
 package buildings;
 
+import static buildings.BuildingType.FARM;
+import static buildings.BuildingType.HOUSE;
 import core.AbstractEntity;
+import core.Main;
 import core.Vec2;
 import graphics.RenderSystem;
 import graphics.SpriteComponent;
@@ -22,8 +25,20 @@ public class Building extends AbstractEntity {
         //Systems
         add(new RenderSystem(pc, sc));
         add(new SelectableSystem(slc));
-        if (type==BuildingType.HOUSE){
-        add(new HouseSystem(pc));
+
+        if (type == FARM) {
+            Main.gameManager.rc.food += 5;
         }
+        if (type == HOUSE) {
+            add(new HouseSystem(pc));
+        }
+    }
+
+    @Override
+    public void destroySelf() {
+        if (getComponent(BuildingTypeComponent.class).type == FARM) {
+            Main.gameManager.rc.food -= 5;
+        }
+        super.destroySelf();
     }
 }

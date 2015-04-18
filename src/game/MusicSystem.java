@@ -16,8 +16,6 @@ public class MusicSystem extends AbstractSystem {
         if (Sounds.GLOBAL_VOLUME > 0 && (mc.current == null || !Sounds.existsSound(mc.current))) {
             mc.current = mc.all[(int) (Math.random() * mc.all.length)];
             Sounds.playSound(mc.current, false, .5);
-            System.out.println(mc.current);
         }
-        System.out.println(Sounds.all());
     }
 }

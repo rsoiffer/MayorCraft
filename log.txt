@@ -1,0 +1,26 @@
+Init: 18 Apr 2015 04:23:44 GMT
+Init Systems: 18 Apr 2015 04:23:44 GMT
+Init Game Manager: 18 Apr 2015 04:23:44 GMT
+Init Keyboard and Mouse: 18 Apr 2015 04:23:46 GMT
+Init World: 18 Apr 2015 04:23:46 GMT
+World Constructor
+World Component
+Terrain Component
+1
+2
+[Lworld.Terrain;@7a90ffff
+2.5
+3
+4
+5
+3
+4
+5
+done
+World System
+Terrain System
+World Done
+Init Units: 18 Apr 2015 04:24:01 GMT
+Run: 18 Apr 2015 04:24:01 GMT
+Done: 18 Apr 2015 04:40:15 GMT
+Finally: 18 Apr 2015 04:40:15 GMT

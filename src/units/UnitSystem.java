@@ -32,13 +32,38 @@ public class UnitSystem extends AbstractSystem {
     }
 
     public void AI(BuildingType type) {
-        if (btc.type != null && dc.building != null && dc.building.getComponent(BuildingTypeComponent.class).type == SCHOOL) {
+        if (btc.type != null && atBuilding(SCHOOL)) {
             btc.type = SCHOOL;
             gc.carrying = false;
             ac.color = btc.type.color;
         }
         switch (type) {
+            case BANK:
+                if (atBuilding(BANK)) {
+                    if (gc.timeRemaining <= 0) {
+                        gc.timeRemaining = 300;
+                        Main.gameManager.rc.money += 10;
+                        Sounds.playSound("drop_the_clip_1.wav", false, Math.min(1, 500. / pc.pos.subtract(Main.gameManager.rmc.viewPos).length()));
+                    }
+                    gc.timeRemaining--;
+                }
+                break;
+            case FARM:
+                break;
             case FIRE_STATION:
+                break;
+            case LABORATORY:
+                if (atBuilding(LABORATORY)) {
+                    if (gc.timeRemaining <= 0) {
+                        gc.timeRemaining = 300;
+                        if (Main.gameManager.rc.money >= 5) {
+                            Main.gameManager.rc.science += 10;
+                            Main.gameManager.rc.money -= 5;
+                            Sounds.playSound("wglass_3_1.wav", false, Math.min(1, 500. / pc.pos.subtract(Main.gameManager.rmc.viewPos).length()));
+                        }
+                    }
+                    gc.timeRemaining--;
+                }
                 break;
             case LUMBER_YARD:
                 gather(LUMBER_YARD, TREE);
@@ -49,7 +74,7 @@ public class UnitSystem extends AbstractSystem {
             case HOUSE:
                 break;
             case SCHOOL:
-                if (btc.type != null && dc.building != null) {
+                if (btc.type != null && dc.building != null && dc.building.getComponent(BuildingTypeComponent.class).type != HOUSE) {
                     btc.type = dc.building.getComponent(BuildingTypeComponent.class).type;
                     gc.carrying = false;
                     ac.color = btc.type.color;
@@ -58,11 +83,15 @@ public class UnitSystem extends AbstractSystem {
         }
     }
 
-    public void gather(BuildingType type, Terrain terrain) {
-        if (dc.building != null && dc.building.getComponent(BuildingTypeComponent.class).type == type) {
+    private boolean atBuilding(BuildingType type) {
+        return dc.building != null && dc.building.getComponent(BuildingTypeComponent.class).type == type;
+    }
+
+    private void gather(BuildingType type, Terrain terrain) {
+        if (atBuilding(type)) {
             if (gc.carrying && gc.timeRemaining == 0) {
                 gc.carrying = false;
-                Main.gameManager.rc.materials += 10;
+                Main.gameManager.rc.materials += 200;
             }
             dc.terrain = nearest(terrain);
             if (dc.terrain != null) {
@@ -77,14 +106,14 @@ public class UnitSystem extends AbstractSystem {
                     dc.changed = true;
                 }
             }
-            if (dc.terrain.terrain == terrain) {
+            if (dc.terrain != null && dc.terrain.terrain == terrain) {
                 if (!gc.carrying) {
-                    gc.timeRemaining = 60;
+                    gc.timeRemaining = 155;
                     gc.carrying = true;
                 } else {
                     if (gc.timeRemaining > 0) {
                         gc.timeRemaining--;
-                        if (gc.timeRemaining % 30 == 25) {
+                        if (gc.timeRemaining % 30 == 0) {
                             Sounds.playSound("metal_box_1.wav", false, Math.min(1, 500. / pc.pos.subtract(Main.gameManager.rmc.viewPos).length()));
                         }
                         if (gc.timeRemaining == 0) {
@@ -108,7 +137,7 @@ public class UnitSystem extends AbstractSystem {
         Building r = null;
         for (Building b : Main.gameManager.elc.getList(Building.class)) {
             if (b.getComponent(BuildingTypeComponent.class).type == type) {
-                if ((r == null && b.getComponent(PositionComponent.class).pos.subtract(pc.pos).lengthSquared() < 1200000)
+                if ((r == null && b.getComponent(PositionComponent.class).pos.subtract(pc.pos).lengthSquared() < 5000000)
                         || (r != null && b.getComponent(PositionComponent.class).pos.subtract(pc.pos).lengthSquared() < r.getComponent(PositionComponent.class).pos.subtract(pc.pos).lengthSquared())) {
                     r = b;
                 }
@@ -120,12 +149,17 @@ public class UnitSystem extends AbstractSystem {
     public GridPoint nearest(Terrain t) {
         GridPoint r = null;
         for (GridPoint gp : Main.gameManager.elc.get(World.class).getComponent(TerrainComponent.class).terrainMap.get(t)) {
-            if ((r == null && gp.toVec2().subtract(pc.pos).lengthSquared() < 1000000)
+            if ((r == null && gp.toVec2().subtract(pc.pos).lengthSquared() < 4000000)
                     || (r != null && gp.toVec2().subtract(pc.pos).lengthSquared() < r.toVec2().subtract(pc.pos).lengthSquared())) {
                 r = gp;
             }
         }
         return r;
+    }
+
+    @Override
+    protected boolean pauseable() {
+        return true;
     }
 
     @Override

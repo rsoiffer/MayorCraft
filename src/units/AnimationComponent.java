@@ -13,10 +13,10 @@ public class AnimationComponent extends AbstractComponent {
     public Limb legL, legR, armL, armR;
 
     public AnimationComponent(Vec2 pos) {
-        legL = new Limb("foot");
-        legR = new Limb("foot");
-        armL = new Limb("hand");
-        armR = new Limb("hand");
+        legL = new Limb("foot", pos);
+        legR = new Limb("foot", pos);
+        armL = new Limb("hand", pos);
+        armR = new Limb("hand", pos);
     }
 
     public AnimationComponent(Vec2 pos, Color4d color) {

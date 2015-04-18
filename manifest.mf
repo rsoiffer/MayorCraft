@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 X-COMMENT: Main-Class will be added automatically by build
 Main-Class: core.Main
-Class-Path: lib/lwjgl.jar lib/lwjgl_util.jar lib/slick-util.jar lib/jfxtr.jar lib/jinput.jar
+Class-Path: lib/lwjgl.jar lib/lwjgl_util.jar lib/slick-util.jar lib/jfxrt.jar lib/jinput.jar

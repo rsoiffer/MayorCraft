@@ -21,7 +21,7 @@ public class TerrainComponent extends AbstractComponent {
                 GridPoint gp = null;
                 do {
                     gp = Main.gameManager.gc.get(RANDOM.nextInt(GRID_SIZE), RANDOM.nextInt(GRID_SIZE));
-                } while (gp.blocked || gp.onRiver);
+                } while (gp.blocked || gp.onRiver || gp.c.terrain != t || gp.c.isOnOcean);
                 list.add(gp);
                 gp.blocked = true;
                 gp.terrain = t;

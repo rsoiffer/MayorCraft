@@ -215,16 +215,14 @@ public class WorldComponent extends AbstractComponent {
         }
         //Calculate blocked areas
         for (Center c : centers) {
-            if (!c.isLand) {
-                for (int i = ((int) c.LL.x + WORLD_SIZE) / SQUARE_SIZE; i < ((int) c.UR.x + WORLD_SIZE) / SQUARE_SIZE + 1; i++) {
-                    for (int j = ((int) c.LL.y + WORLD_SIZE) / SQUARE_SIZE; j < ((int) c.UR.y + WORLD_SIZE) / SQUARE_SIZE + 1; j++) {
-                        if (i < GRID_SIZE && j < GRID_SIZE) {
-                            GridPoint gp = Main.gameManager.gc.get(i, j);
-                            if (c.contains(gp.toVec2())) {
-                                gp.blocked = true;
-                                gp.c = c;
-                                c.gridPoints.add(gp);
-                            }
+            for (int i = ((int) c.LL.x + WORLD_SIZE) / SQUARE_SIZE; i < ((int) c.UR.x + WORLD_SIZE) / SQUARE_SIZE + 1; i++) {
+                for (int j = ((int) c.LL.y + WORLD_SIZE) / SQUARE_SIZE; j < ((int) c.UR.y + WORLD_SIZE) / SQUARE_SIZE + 1; j++) {
+                    if (i < GRID_SIZE && j < GRID_SIZE) {
+                        GridPoint gp = Main.gameManager.gc.get(i, j);
+                        if (c.contains(gp.toVec2())) {
+                            gp.blocked = !c.isLand;
+                            gp.c = c;
+                            c.gridPoints.add(gp);
                         }
                     }
                 }

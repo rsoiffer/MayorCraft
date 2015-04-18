@@ -1,7 +1,11 @@
 package core;
 
 import static buildings.BuildingType.HOUSE;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -11,11 +15,16 @@ import world.World;
 
 public abstract class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        System.setProperty("org.lwjgl.librarypath", new File("natives").getAbsolutePath());
         try {
             init();
             run();
-        } catch (LWJGLException ex) {
+        } catch (Exception ex) {
+            PrintWriter writer = new PrintWriter("log.txt", "UTF-8");
+            writer.println("Error: " + Calendar.getInstance().getTime().toGMTString());
+            writer.println(ex);
+            writer.close();
             ex.printStackTrace();
         } finally {
             destroy();

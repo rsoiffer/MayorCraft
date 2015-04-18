@@ -19,6 +19,7 @@ public class Center {
     public Vec2 LL;
     public Vec2 UR;
     public ArrayList<GridPoint> gridPoints;
+    public Terrain terrain;
 
     Center(double x, double y) {
         pos = new Vec2(x, y);
@@ -33,6 +34,9 @@ public class Center {
             }
         });
         gridPoints = new ArrayList();
+        if (Math.random() < .5) {
+            terrain = Terrain.values()[(int) (Math.random() * Terrain.values().length)];
+        }
     }
 
     Vec2 average() {
