@@ -50,6 +50,8 @@ public class MenuSystem extends AbstractSystem {
                         for (int i = 0; i < 10; i++) {
                             new Unit(c.pos.add(Vec2.random(200)), HOUSE);
                         }
+
+                        Main.gameManager.rmc.viewPos = c.pos;
                     } //Help
                     if (MouseInput.isReleased(0) && MouseInput.mouseScreen().containedBy(new Vec2(840, 540), new Vec2(1080, 420))) {
                         page = 2;
