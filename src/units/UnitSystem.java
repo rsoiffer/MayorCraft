@@ -48,10 +48,6 @@ public class UnitSystem extends AbstractSystem {
                     gc.timeRemaining--;
                 }
                 break;
-            case FARM:
-                break;
-            case FIRE_STATION:
-                break;
             case LABORATORY:
                 if (atBuilding(LABORATORY)) {
                     if (gc.timeRemaining <= 0) {
@@ -70,8 +66,6 @@ public class UnitSystem extends AbstractSystem {
                 break;
             case MINE:
                 gather(MINE, ROCK);
-                break;
-            case HOUSE:
                 break;
             case SCHOOL:
                 if (btc.type != null && dc.building != null && dc.building.getComponent(BuildingTypeComponent.class).type != HOUSE) {

@@ -12,7 +12,7 @@ public enum BuildingType {
 
     BANK(new Color4d(1, 1, .5), 200, 0),
     FARM(new Color4d(.7, 1, .3), 50, 0),
-    FIRE_STATION(new Color4d(1, 0, 0), 100, 100),
+    //FIRE_STATION(new Color4d(1, 0, 0), 100, 100),
     LABORATORY(new Color4d(0, .4, 1), 200, 200),
     LUMBER_YARD(new Color4d(.3, .5, 0), 50, 10),
     MINE(new Color4d(.4, .4, .4), 50, 10),

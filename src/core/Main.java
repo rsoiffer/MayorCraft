@@ -1,6 +1,5 @@
 package core;
 
-import static buildings.BuildingType.HOUSE;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,8 +9,6 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
-import units.Unit;
-import world.World;
 
 public abstract class Main {
 
@@ -52,18 +49,10 @@ public abstract class Main {
         gameManager = new GameManager();
         Keyboard.create();
         Mouse.create();
-
-        //Create entities
-        new World();
-
-        new Unit(Vec2.random(200), null);
-        for (int i = 0; i < 10; i++) {
-            new Unit(Vec2.random(200), HOUSE);
-        }
     }
 
     public static void run() {
-        while (!Display.isCloseRequested() && !Keys.isPressed(Keyboard.KEY_ESCAPE)) {
+        while (!Display.isCloseRequested()) {
             //Input
             Keys.update();
             MouseInput.update();

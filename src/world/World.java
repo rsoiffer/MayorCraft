@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class World extends AbstractEntity {
 
-    static final int POINTS = 10000;
+    public static final int POINTS = 10000;
     static final int BUCKETS = POINTS / 10;
     public static final int WORLD_SIZE = 50000;
     public static Random RANDOM;

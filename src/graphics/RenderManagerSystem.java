@@ -2,11 +2,8 @@ package graphics;
 
 import core.AbstractSystem;
 import core.Keys;
-import core.MouseInput;
-import core.Vec2;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
-import static org.lwjgl.input.Keyboard.*;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
@@ -99,25 +96,25 @@ public class RenderManagerSystem extends AbstractSystem {
 
     @Override
     public void update() {
-        if (Keys.isDown(KEY_W)) {
-            rmc.viewPos = rmc.viewPos.add(new Vec2(0, 20 * rmc.viewSize.y / rmc.displaySize.y));
-        }
-        if (Keys.isDown(KEY_A)) {
-            rmc.viewPos = rmc.viewPos.add(new Vec2(-20 * rmc.viewSize.x / rmc.displaySize.x, 0));
-        }
-        if (Keys.isDown(KEY_S)) {
-            rmc.viewPos = rmc.viewPos.add(new Vec2(0, -20 * rmc.viewSize.y / rmc.displaySize.y));
-        }
-        if (Keys.isDown(KEY_D)) {
-            rmc.viewPos = rmc.viewPos.add(new Vec2(20 * rmc.viewSize.x / rmc.displaySize.x, 0));
-        }
-        rmc.zoom -= MouseInput.wheel();
-        if (rmc.zoom > 45) {
-            rmc.zoom = 45;
-        }
-        if (rmc.zoom < -15) {
-            rmc.zoom = -15;
-        }
+//        if (Keys.isDown(KEY_W)) {
+//            rmc.viewPos = rmc.viewPos.add(new Vec2(0, 20 * rmc.viewSize.y / rmc.displaySize.y));
+//        }
+//        if (Keys.isDown(KEY_A)) {
+//            rmc.viewPos = rmc.viewPos.add(new Vec2(-20 * rmc.viewSize.x / rmc.displaySize.x, 0));
+//        }
+//        if (Keys.isDown(KEY_S)) {
+//            rmc.viewPos = rmc.viewPos.add(new Vec2(0, -20 * rmc.viewSize.y / rmc.displaySize.y));
+//        }
+//        if (Keys.isDown(KEY_D)) {
+//            rmc.viewPos = rmc.viewPos.add(new Vec2(20 * rmc.viewSize.x / rmc.displaySize.x, 0));
+//        }
+//        rmc.zoom -= MouseInput.wheel();
+//        if (rmc.zoom > 45) {
+//            rmc.zoom = 45;
+//        }
+//        if (rmc.zoom < -15) {
+//            rmc.zoom = -15;
+//        }
         rmc.viewSize = rmc.displaySize.multiply(Math.pow(1.1, rmc.zoom));
 
         if (Keys.isPressed(Keyboard.KEY_F11)) {

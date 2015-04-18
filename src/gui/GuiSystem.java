@@ -119,6 +119,11 @@ public class GuiSystem extends AbstractSystem {
                     Graphics.drawText(BuildingType.values()[i].toString(), "GUI", new Vec2(1730, 1000 - 100 * i), Color.black);
                 }
             }
+
+            //Zoom buttons
+            Graphics.drawSprite(loadSprite("zoom_in"), new Vec2(50, 125), new Vec2(1, 1), 0, Color4d.WHITE);
+            Graphics.drawSprite(loadSprite("zoom_out"), new Vec2(50, 50), new Vec2(1, 1), 0, Color4d.WHITE);
+
         } catch (IOException ex) {
             ex.printStackTrace();
         }

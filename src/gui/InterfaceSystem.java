@@ -5,6 +5,7 @@ import buildings.BuildingType;
 import core.*;
 import game.ResourcesComponent;
 import graphics.Graphics;
+import graphics.RenderManagerComponent;
 import units.SelectableComponent;
 import units.SelectorComponent;
 import world.GridComponent;
@@ -28,6 +29,39 @@ public class InterfaceSystem extends AbstractSystem {
 
     @Override
     public void update() {
+        RenderManagerComponent rmc = Main.gameManager.rmc;
+        //Pan view
+        if (MouseInput.mouseScreen().x < 5) {
+            rmc.viewPos = rmc.viewPos.add(new Vec2(-20 * rmc.viewSize.y / rmc.displaySize.y, 0));
+        }
+        if (MouseInput.mouseScreen().x > 1915) {
+            rmc.viewPos = rmc.viewPos.add(new Vec2(20 * rmc.viewSize.y / rmc.displaySize.y, 0));
+        }
+        if (MouseInput.mouseScreen().y < 5) {
+            rmc.viewPos = rmc.viewPos.add(new Vec2(0, -20 * rmc.viewSize.y / rmc.displaySize.y));
+        }
+        if (MouseInput.mouseScreen().y > 1075) {
+            rmc.viewPos = rmc.viewPos.add(new Vec2(0, 20 * rmc.viewSize.y / rmc.displaySize.y));
+        }
+        //Zoom
+        if (MouseInput.mouseScreen().containedBy(new Vec2(25, 25), new Vec2(75, 75))) {
+            if (MouseInput.isReleased(0)) {
+                rmc.zoom += 5;
+                if (rmc.zoom > 45) {
+                    rmc.zoom = 45;
+                }
+            }
+            return;
+        }
+        if (MouseInput.mouseScreen().containedBy(new Vec2(25, 100), new Vec2(75, 150))) {
+            if (MouseInput.isReleased(0)) {
+                rmc.zoom -= 5;
+                if (rmc.zoom < -15) {
+                    rmc.zoom = -15;
+                }
+            }
+            return;
+        }
         if (MouseInput.mouseScreen().y < 1030) {
             //Not on top bar
             if (ic.constructionMode) {

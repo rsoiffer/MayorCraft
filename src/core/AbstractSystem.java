@@ -6,7 +6,7 @@ public abstract class AbstractSystem {
         Main.systems.get(getLayer()).add(this);
     }
 
-    void destroy() {
+    public void destroy() {
         Main.systems.get(getLayer()).remove(this);
     }
 

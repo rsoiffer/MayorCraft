@@ -14,7 +14,7 @@ import static world.World.*;
 
 public class WorldComponent extends AbstractComponent {
 
-    List<Center> centers = new ArrayList();
+    public List<Center> centers = new ArrayList();
     List<Edge> edges = new ArrayList();
     List<Corner> corners = new ArrayList();
     ArrayList<ArrayList<Corner>> buckets = new ArrayList();
