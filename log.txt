@@ -1,2 +1,0 @@
-Error: 18 Apr 2015 15:25:10 GMT
-java.lang.ArrayIndexOutOfBoundsException: -136
